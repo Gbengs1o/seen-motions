@@ -1,0 +1,61 @@
+{
+  "brand": "seen",
+  "nav": ["WORK", "STUDIO", "SERVICES"],
+  "hero": {
+    "title": "SEEN\nMOTIONS",
+    "subtitle": "Design in Motion. Impact in Seconds.",
+    "button": "GET IN TOUCH",
+    "logoUrl": "/owl-mark.svg",
+    "backgroundVideoUrl": ""
+  },
+  "works": {
+    "eyebrow": "2021 — 2024",
+    "title": "SELECTED WORKS",
+    "button": "VIEW MORE",
+    "items": [
+      {
+        "title": "AURA CAMPAIGN",
+        "year": "2024",
+        "mediaUrl": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1400&auto=format&fit=crop",
+        "type": "image"
+      },
+      {
+        "title": "KINETIC FORMS",
+        "year": "2023",
+        "mediaUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=900&auto=format&fit=crop",
+        "type": "image"
+      },
+      {
+        "title": "STRUCTURA",
+        "year": "2022",
+        "mediaUrl": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=900&auto=format&fit=crop",
+        "type": "image"
+      }
+    ]
+  },
+  "services": [
+    {
+      "number": "01",
+      "title": "Creative\nDirection",
+      "body": "Orchestrating comprehensive visual narratives that transcend traditional aesthetics, building distinctive brand monoliths."
+    },
+    {
+      "number": "02",
+      "title": "Motion\nGraphics",
+      "body": "Designing kinetic experiences governed by physics and precise timing, ensuring every frame communicates authority."
+    },
+    {
+      "number": "03",
+      "title": "Visual\nStrategy",
+      "body": "Architecting long-term optical ecosystems. We define the rules of engagement for your brand's presence in the physical and digital space."
+    }
+  ],
+  "vision": {
+    "title": "VISION",
+    "body": "We believe in the power of extreme reduction. By eliminating the extraneous, we amplify the essential. Seen Visual Studio exists at the intersection of stark minimalism and high-impact cinematic execution. We do not decorate; we architect visual permanence. Our commitment is to unyielding precision and the quiet luxury of absolute clarity."
+  },
+  "footer": {
+    "copyright": "© 2026 seen motions. All rights reserved.",
+    "links": ["Instagram", "LinkedIn", "X", "Youtube"]
+  }
+}
