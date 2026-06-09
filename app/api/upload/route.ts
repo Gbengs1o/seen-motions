@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { put } from '@vercel/blob';
 
 function cloudinaryCredentials() {
   const cloudinaryUrl = process.env.CLOUDINARY_URL || '';
@@ -46,6 +47,23 @@ export async function POST(request: Request) {
   const file = formData.get('file');
   if (!(file instanceof File)) {
     return NextResponse.json({ error: 'No file received.' }, { status: 400 });
+  }
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'upload';
+    const blob = await put(`media/${Date.now()}-${safeName}`, file, {
+      access: 'public',
+      addRandomSuffix: true
+    });
+
+    return NextResponse.json({
+      url: blob.url,
+      publicId: blob.pathname,
+      resourceType: file.type.startsWith('video/') ? 'video' : 'image',
+      width: null,
+      height: null,
+      format: safeName.split('.').pop() || ''
+    });
   }
 
   const arrayBuffer = await file.arrayBuffer();

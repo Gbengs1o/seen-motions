@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { list, put } from '@vercel/blob';
 
 export type LinkItem = { label: string; href: string };
 export type NavItem = LinkItem & { sectionId?: string };
@@ -69,13 +70,55 @@ export type SiteContent = {
 };
 
 const contentPath = path.join(process.cwd(), 'data', 'content.json');
+const blobContentPath = 'cms/content.json';
 
-export async function getContent(): Promise<SiteContent> {
+async function getLocalContent(): Promise<SiteContent> {
   const raw = await fs.readFile(contentPath, 'utf8');
   return JSON.parse(raw);
 }
 
+async function getBlobContent(): Promise<SiteContent | null> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return null;
+  }
+
+  const { blobs } = await list({
+    prefix: blobContentPath,
+    limit: 1
+  });
+  const blob = blobs.find((item) => item.pathname === blobContentPath) || blobs[0];
+
+  if (!blob?.url) {
+    return null;
+  }
+
+  const response = await fetch(`${blob.url}?ts=${Date.now()}`, {
+    cache: 'no-store'
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json();
+}
+
+export async function getContent(): Promise<SiteContent> {
+  const blobContent = await getBlobContent();
+  return blobContent || getLocalContent();
+}
+
 export async function saveContent(content: SiteContent) {
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    await put(blobContentPath, JSON.stringify(content, null, 2), {
+      access: 'public',
+      allowOverwrite: true,
+      cacheControlMaxAge: 0,
+      contentType: 'application/json'
+    });
+    return;
+  }
+
   await fs.mkdir(path.dirname(contentPath), { recursive: true });
   await fs.writeFile(contentPath, JSON.stringify(content, null, 2));
 }
