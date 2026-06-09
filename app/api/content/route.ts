@@ -9,7 +9,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Invalid admin password.' }, { status: 401 });
   }
 
-  return NextResponse.json(await getContent());
+  try {
+    return NextResponse.json(await getContent());
+  } catch (error) {
+    console.error('Content read failed', error);
+    return NextResponse.json({ error: 'Could not read content.' }, { status: 500 });
+  }
 }
 
 export async function PUT(request: Request) {
@@ -20,7 +25,13 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'Invalid admin password.' }, { status: 401 });
   }
 
-  const content = await request.json();
-  await saveContent(content);
-  return NextResponse.json({ ok: true, content });
+  try {
+    const content = await request.json();
+    await saveContent(content);
+    return NextResponse.json({ ok: true, content });
+  } catch (error) {
+    console.error('Content save failed', error);
+    const message = error instanceof Error ? error.message : 'Could not save content.';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
