@@ -1,15 +1,22 @@
 import { NextResponse } from 'next/server';
 import { getContent, saveContent } from '@/lib/content';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const adminPassword = process.env.ADMIN_PASSWORD || 'seen-site';
+  const suppliedPassword = request.headers.get('x-admin-password');
+
+  if (suppliedPassword !== adminPassword) {
+    return NextResponse.json({ error: 'Invalid admin password.' }, { status: 401 });
+  }
+
   return NextResponse.json(await getContent());
 }
 
 export async function PUT(request: Request) {
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminPassword = process.env.ADMIN_PASSWORD || 'seen-site';
   const suppliedPassword = request.headers.get('x-admin-password');
 
-  if (adminPassword && suppliedPassword !== adminPassword) {
+  if (suppliedPassword !== adminPassword) {
     return NextResponse.json({ error: 'Invalid admin password.' }, { status: 401 });
   }
 

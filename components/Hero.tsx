@@ -1,10 +1,12 @@
 import { ArrowRight } from 'lucide-react';
+import HeroScrollAnimation from './HeroScrollAnimation';
 
 type HeroProps = {
   hero: {
     title: string;
     subtitle: string;
     button: string;
+    buttonHref: string;
     backgroundVideoUrl?: string;
   };
 };
@@ -12,10 +14,11 @@ type HeroProps = {
 function SeenOwlMark() {
   return (
     <svg
-      className="heroOwlSvg"
+      className="block h-full w-full"
       width="6037"
       height="5892"
       viewBox="0 0 6037 5892"
+      preserveAspectRatio="none"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -61,39 +64,105 @@ function SeenOwlMark() {
 }
 
 export default function Hero({ hero }: HeroProps) {
+  const titleLines = hero.title.split('\n');
+  const titleLabel = titleLines.join(' ');
+  const [subtitleLead, subtitleRest = ''] = hero.subtitle.split('. ');
+  const subtitleTail = subtitleRest || '';
+
   return (
-    <section id="top" className="hero">
-      {hero.backgroundVideoUrl ? (
-        <video
-          className="heroVideo"
-          src={hero.backgroundVideoUrl}
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
-      ) : null}
+    <section
+      id="top"
+      className="hero-scroll-section relative h-[calc(780px+220vh)] bg-[#f7f7f7] md:h-[calc(860px+220vh)]"
+    >
+      <HeroScrollAnimation />
 
-      <div className="heroSplit heroSplitWhite" />
-      <div className="heroSplit heroSplitBlack" />
+      <div className="hero-scroll-stage sticky top-[134px] isolate h-[780px] overflow-hidden bg-[#f7f7f7] md:top-[69px] md:h-[860px]">
+        {hero.backgroundVideoUrl ? (
+          <video
+            className="hero-background-scroll absolute inset-0 -z-20 h-full w-full object-cover opacity-[0.18] mix-blend-luminosity"
+            src={hero.backgroundVideoUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+        ) : null}
 
-      <div className="logoCard">
-        <SeenOwlMark />
-      </div>
+        <div className="hero-background-scroll absolute top-0 bottom-[-160px] left-0 -z-30 w-1/2 bg-[#f7f7f7]" />
+        <div className="hero-background-scroll absolute top-0 right-0 bottom-[-160px] -z-30 w-1/2 bg-black" />
 
-      <div className="heroCopy">
-        <h1>
-          {hero.title.split('\n').map((line) => (
-            <span key={line}>{line}</span>
-          ))}
-        </h1>
+        <div className="absolute top-[96px] left-1/2 h-[190px] w-[190px] -translate-x-1/2 md:top-[110px] md:h-[270px] md:w-[270px]">
+          <div className="hero-logo-scroll-motion flex h-full w-full items-center justify-center overflow-hidden bg-[linear-gradient(to_right,#fff_0_50%,#000_50%_100%)] drop-shadow-[-24px_34px_28px_rgba(0,0,0,0.22)]">
+            <SeenOwlMark />
+          </div>
+        </div>
 
-        <p>{hero.subtitle}</p>
+        <div className="absolute top-[350px] left-1/2 z-10 flex -translate-x-1/2 flex-col items-center text-center md:top-[415px]">
+          <div className="hero-text-scroll-motion flex flex-col items-center">
+            <h1
+              className="font-canela relative origin-center text-[56px] font-black uppercase leading-[0.82] text-transparent md:scale-x-[1.32] md:text-[112px]"
+              aria-label={titleLabel}
+            >
+              <span className="invisible block" aria-hidden="true">
+                {titleLines.map((line) => (
+                  <span className="block" key={line}>
+                    {line}
+                  </span>
+                ))}
+              </span>
+              <span
+                className="absolute inset-0 text-black [clip-path:inset(0_50%_0_0)]"
+                aria-hidden="true"
+              >
+                {titleLines.map((line) => (
+                  <span className="block" key={line}>
+                    {line}
+                  </span>
+                ))}
+              </span>
+              <span
+                className="absolute inset-0 text-white [clip-path:inset(0_0_0_50%)]"
+                aria-hidden="true"
+              >
+                {titleLines.map((line) => (
+                  <span className="block" key={line}>
+                    {line}
+                  </span>
+                ))}
+              </span>
+            </h1>
 
-        <a className="goldButton" href="mailto:hello@seenmotions.com">
-          {hero.button}
-          <ArrowRight size={20} />
-        </a>
+            <p
+              className="font-sohne relative mt-9 grid w-screen grid-cols-2 text-[16px] leading-none md:mt-8 md:text-[22px]"
+              aria-label={hero.subtitle}
+            >
+              <span className="pr-px text-right text-black" aria-hidden="true">
+                {subtitleLead}
+              </span>
+              <span
+                className="absolute top-0 left-1/2 inline-block w-[0.28em] -translate-x-1/2 text-transparent"
+                aria-hidden="true"
+              >
+                <span className="invisible">.</span>
+                <span className="absolute inset-0 text-black [clip-path:inset(0_50%_0_0)]">.</span>
+                <span className="absolute inset-0 text-white [clip-path:inset(0_0_0_50%)]">.</span>
+              </span>
+              <span className="pl-[0.32em] text-left text-white" aria-hidden="true">
+                {subtitleTail}
+              </span>
+            </p>
+          </div>
+
+          <div className="hero-button-scroll-motion mt-[104px] md:mt-[86px]">
+            <a
+            className="premium-button premium-button-gold inline-flex h-[60px] min-w-[270px] items-center justify-center gap-8 px-8 text-[13px] font-black uppercase tracking-[0.2em] md:h-[58px] md:min-w-[250px] md:gap-7 md:text-[12px]"
+            href={hero.buttonHref}
+          >
+              <span>{hero.button}</span>
+              <ArrowRight className="h-6 w-6 md:h-5 md:w-5" strokeWidth={2.25} />
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   );

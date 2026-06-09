@@ -5,37 +5,33 @@ type MediaProps = {
   type?: string;
   alt: string;
   className?: string;
+  loading?: 'eager' | 'lazy';
 };
 
-export default function Media({ url, type, alt, className }: MediaProps) {
+export default function Media({ url, type, alt, className, loading = 'lazy' }: MediaProps) {
   if (type === 'video') {
     return (
       <video
-        className={className}
+        className={`h-full w-full object-cover ${className ?? ''}`}
         src={url}
         autoPlay
         muted
         loop
         playsInline
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-        }}
       />
     );
   }
 
   return (
-    <Image
-      className={className}
-      src={url}
-      alt={alt}
-      fill
-      sizes="(max-width: 900px) 100vw, 60vw"
-      style={{
-        objectFit: 'cover',
-      }}
-    />
+    <div className={`relative h-full w-full ${className ?? ''}`}>
+      <Image
+        src={url}
+        alt={alt}
+        fill
+        loading={loading}
+        sizes="(max-width: 900px) 100vw, 60vw"
+        className="object-cover"
+      />
+    </div>
   );
 }

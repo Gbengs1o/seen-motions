@@ -7,12 +7,14 @@ import Services from '@/components/Services';
 import Vision from '@/components/Vision';
 import Footer from '@/components/Footer';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const content = await getContent();
 
   return (
     <main>
-      <Header brand={content.brand} nav={content.nav} />
+      <Header brand={content.brand} cta={content.header} nav={content.nav} />
       <Hero hero={content.hero} />
       <Works works={content.works} />
       <Services services={content.services} />

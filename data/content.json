@@ -1,35 +1,71 @@
 {
   "brand": "seen",
-  "nav": ["WORK", "STUDIO", "SERVICES"],
+  "nav": [
+    {
+      "label": "WORK",
+      "href": "/#work",
+      "sectionId": "work"
+    },
+    {
+      "label": "STUDIO",
+      "href": "/#studio",
+      "sectionId": "studio"
+    },
+    {
+      "label": "SERVICES",
+      "href": "/#services",
+      "sectionId": "services"
+    }
+  ],
+  "header": {
+    "ctaLabel": "GET IN TOUCH",
+    "ctaHref": "/contact"
+  },
   "hero": {
     "title": "SEEN\nMOTIONS",
     "subtitle": "Design in Motion. Impact in Seconds.",
     "button": "GET IN TOUCH",
+    "buttonHref": "/contact",
     "logoUrl": "/owl-mark.svg",
     "backgroundVideoUrl": ""
   },
   "works": {
-    "eyebrow": "2021 — 2024",
+    "eyebrow": "2021 - 2024",
     "title": "SELECTED WORKS",
     "button": "VIEW MORE",
+    "buttonHref": "/portfolio",
     "items": [
+      {
+        "title": "COLLAGE SAMPLE",
+        "year": "2026",
+        "slug": "collage-sample",
+        "thumbnailUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/f_auto,q_auto,so_0/v1/seen-motions/collage-sample.jpg?_a=BAMAPqX00",
+        "videoUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/v1781015591/seen-motions/collage-sample.mp4",
+        "description": "Sample uploaded work for testing thumbnail preview, hover playback, and the project detail page."
+      },
       {
         "title": "AURA CAMPAIGN",
         "year": "2024",
-        "mediaUrl": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1400&auto=format&fit=crop",
-        "type": "image"
+        "slug": "aura-campaign",
+        "thumbnailUrl": "https://res.cloudinary.com/dn4h1252u/image/upload/v1781041618/seen-motions/eqavroetr8ara7eoanp2.png",
+        "videoUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/v1781041631/seen-motions/v72edmduhk30ge1gzi7g.mp4",
+        "description": "something good"
       },
       {
         "title": "KINETIC FORMS",
         "year": "2023",
-        "mediaUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=900&auto=format&fit=crop",
-        "type": "image"
+        "slug": "kinetic-forms",
+        "thumbnailUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=900&auto=format&fit=crop",
+        "videoUrl": "",
+        "description": ""
       },
       {
         "title": "STRUCTURA",
         "year": "2022",
-        "mediaUrl": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=900&auto=format&fit=crop",
-        "type": "image"
+        "slug": "structura",
+        "thumbnailUrl": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=900&auto=format&fit=crop",
+        "videoUrl": "",
+        "description": ""
       }
     ]
   },
@@ -54,8 +90,142 @@
     "title": "VISION",
     "body": "We believe in the power of extreme reduction. By eliminating the extraneous, we amplify the essential. Seen Visual Studio exists at the intersection of stark minimalism and high-impact cinematic execution. We do not decorate; we architect visual permanence. Our commitment is to unyielding precision and the quiet luxury of absolute clarity."
   },
+  "contact": {
+    "pageTitle": "Contact | Seen Motions",
+    "pageDescription": "Start a dialogue with Seen Motions.",
+    "heroTitle": "LET'S CRAFT\nTHE UNSEEN",
+    "heroSubtitle": "Ready to create?",
+    "backgroundWord": "seen",
+    "formEyebrow": "Start a Dialogue",
+    "formTitle": "Tell us what you want",
+    "labels": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Call",
+      "whatsapp": "Whatsapp",
+      "message": "Message"
+    },
+    "placeholders": {
+      "name": "Your name",
+      "email": "hello@example.com",
+      "phone": "80837015542",
+      "whatsapp": "09034567789",
+      "message": "Just reach out to us and inform us of what you want"
+    },
+    "submitLabel": "Send Message",
+    "helperText": "Opens an email draft with the name, email, call details, WhatsApp and message already filled in.",
+    "emailSubject": "New project enquiry",
+    "directTitle": "Direct Contact",
+    "email": "hello@seen.studio",
+    "phone": "+44 20 7123 4567",
+    "phoneHref": "tel:+442071234567",
+    "whatsappLabel": "WhatsApp 09034567789",
+    "whatsappHref": "https://wa.me/2349034567789",
+    "connectTitle": "Connect",
+    "quickLinks": [
+      {
+        "label": "Instagram",
+        "href": "https://instagram.com/seenmotions"
+      },
+      {
+        "label": "LinkedIn",
+        "href": "https://www.linkedin.com/company/seen-motions"
+      },
+      {
+        "label": "X",
+        "href": "https://x.com/seenmotions"
+      }
+    ]
+  },
+  "portfolio": {
+    "pageTitle": "Portfolio | Seen Motions",
+    "pageDescription": "Selected motion and visual work by Seen Motions.",
+    "title": "Selected\nWorks",
+    "countLabel": "01 - 05",
+    "featuredButtonLabel": "VIEW PROJECT",
+    "projectButtonLabel": "VIEW PROJECT",
+    "projects": [
+      {
+        "title": "COLLAGE SAMPLE",
+        "year": "2026",
+        "slug": "collage-sample",
+        "discipline": "Motion Test",
+        "buttonLabel": "VIEW PROJECT",
+        "thumbnailUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/f_auto,q_auto,so_0/v1/seen-motions/collage-sample.jpg?_a=BAMAPqX00",
+        "videoUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/v1781015591/seen-motions/collage-sample.mp4",
+        "description": "Sample uploaded work for testing thumbnail preview, hover playback, and the project detail page."
+      },
+      {
+        "title": "MONOLITHIC FORMS",
+        "year": "2024",
+        "slug": "monolithic-forms",
+        "discipline": "Visual System",
+        "buttonLabel": "VIEW PROJECT",
+        "thumbnailUrl": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1400&auto=format&fit=crop",
+        "videoUrl": "",
+        "description": ""
+      },
+      {
+        "title": "SILHOUETTE SERIES",
+        "year": "2023",
+        "slug": "silhouette-series",
+        "discipline": "Campaign Motion",
+        "buttonLabel": "VIEW PROJECT",
+        "thumbnailUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=900&auto=format&fit=crop",
+        "videoUrl": "",
+        "description": ""
+      },
+      {
+        "title": "TACTILE STRUCTURES",
+        "year": "2023",
+        "slug": "tactile-structures",
+        "discipline": "Spatial Film",
+        "buttonLabel": "VIEW PROJECT",
+        "thumbnailUrl": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=900&auto=format&fit=crop",
+        "videoUrl": "",
+        "description": ""
+      },
+      {
+        "title": "QUIET SPACES",
+        "year": "2022",
+        "slug": "quiet-spaces",
+        "discipline": "Brand Atmosphere",
+        "buttonLabel": "VIEW PROJECT",
+        "thumbnailUrl": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=900&auto=format&fit=crop",
+        "videoUrl": "",
+        "description": ""
+      },
+      {
+        "title": "KINETIC FORMS",
+        "year": "2021",
+        "slug": "kinetic-forms",
+        "discipline": "Motion Identity",
+        "buttonLabel": "VIEW PROJECT",
+        "thumbnailUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=900&auto=format&fit=crop",
+        "videoUrl": "",
+        "description": ""
+      }
+    ]
+  },
   "footer": {
     "copyright": "© 2026 seen motions. All rights reserved.",
-    "links": ["Instagram", "LinkedIn", "X", "Youtube"]
+    "links": [
+      {
+        "label": "Instagram",
+        "href": "https://instagram.com/seenmotions"
+      },
+      {
+        "label": "LinkedIn",
+        "href": "https://www.linkedin.com/company/seen-motions"
+      },
+      {
+        "label": "X",
+        "href": "https://x.com/seenmotions"
+      },
+      {
+        "label": "Youtube",
+        "href": "https://youtube.com/@seenmotions"
+      }
+    ]
   }
 }

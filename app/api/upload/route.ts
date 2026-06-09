@@ -1,17 +1,42 @@
 import { NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
+
+function cloudinaryCredentials() {
+  const cloudinaryUrl = process.env.CLOUDINARY_URL || '';
+  const parsed = cloudinaryUrl.match(/^cloudinary:\/\/([^:]+):([^@]+)@(.+)$/);
+
+  return {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || parsed?.[3],
+    apiKey: process.env.CLOUDINARY_API_KEY || parsed?.[1],
+    apiSecret: process.env.CLOUDINARY_API_SECRET || parsed?.[2]
+  };
+}
+
+async function loadCloudinary() {
+  const cloudinaryUrl = process.env.CLOUDINARY_URL;
+  const shouldMaskInvalidUrl = Boolean(cloudinaryUrl && !cloudinaryUrl.startsWith('cloudinary://'));
+
+  if (shouldMaskInvalidUrl) {
+    delete process.env.CLOUDINARY_URL;
+  }
+
+  const module = await import('cloudinary');
+
+  if (shouldMaskInvalidUrl && cloudinaryUrl) {
+    process.env.CLOUDINARY_URL = cloudinaryUrl;
+  }
+
+  return module.v2;
+}
 
 export async function POST(request: Request) {
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminPassword = process.env.ADMIN_PASSWORD || 'seen-site';
   const suppliedPassword = request.headers.get('x-admin-password');
 
-  if (adminPassword && suppliedPassword !== adminPassword) {
+  if (suppliedPassword !== adminPassword) {
     return NextResponse.json({ error: 'Invalid admin password.' }, { status: 401 });
   }
 
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const { cloudName, apiKey, apiSecret } = cloudinaryCredentials();
 
   if (!cloudName || !apiKey || !apiSecret || apiSecret.includes('replace_with')) {
     return NextResponse.json({ error: 'Cloudinary environment variables are missing. Add CLOUDINARY_API_SECRET before uploading.' }, { status: 500 });
@@ -26,6 +51,7 @@ export async function POST(request: Request) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
+  const cloudinary = await loadCloudinary();
   cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret });
 
   const result = await new Promise<any>((resolve, reject) => {

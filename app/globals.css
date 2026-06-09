@@ -1,167 +1,448 @@
-.hero {
-  position: relative;
-  min-height: calc(100vh - 72px);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  isolation: isolate;
-}
+@import "tailwindcss";
 
-.heroSplit {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  z-index: -3;
-}
-
-.heroSplitWhite {
-  left: 0;
-  background: #f7f7f7;
-}
-
-.heroSplitBlack {
-  right: 0;
-  background: #000;
-}
-
-.heroVideo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -2;
-  object-fit: cover;
-  opacity: 0.18;
-  mix-blend-mode: luminosity;
-}
-
-.logoCard {
-  position: absolute;
-  top: 11%;
-  left: 50%;
-  width: 220px;
-  height: 220px;
-  transform: translateX(-50%);
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(-25px 35px 28px rgba(0, 0, 0, 0.18));
-}
-
-.heroOwlSvg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.heroCopy {
-  position: relative;
-  z-index: 2;
-  margin-top: 180px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.heroCopy h1 {
-  margin: 0;
-  font-size: clamp(4.8rem, 10vw, 11rem);
-  line-height: 0.82;
-  letter-spacing: -0.08em;
-  font-weight: 900;
-  text-transform: uppercase;
-  color: #000;
-  mix-blend-mode: difference;
-}
-
-.heroCopy h1 span {
-  display: block;
-}
-
-.heroCopy p {
-  margin: 44px 0 0;
-  font-size: clamp(1.1rem, 1.5vw, 1.45rem);
-  color: #2d2d2d;
-  mix-blend-mode: difference;
-}
-
-.goldButton {
-  margin-top: 150px;
-  height: 64px;
-  min-width: 285px;
-  padding: 0 38px;
-  border: 0;
-  background: #f2c849;
-  color: #000;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 28px;
-  font-size: 0.88rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition:
-    background-color 0.35s ease,
-    color 0.35s ease,
-    transform 0.35s ease;
-}
-
-.goldButton:hover {
-  background: #000;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-@media (max-width: 900px) {
-  .hero {
-    min-height: 820px;
+@layer base {
+  @font-face {
+    font-family: "Canela";
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+    src:
+      local("Canela"),
+      local("Canela Regular");
   }
 
-  .logoCard {
-    top: 12%;
-    width: 150px;
-    height: 150px;
+  @font-face {
+    font-family: "Sohne";
+    font-style: normal;
+    font-weight: 300 900;
+    font-display: swap;
+    src:
+      local("Söhne"),
+      local("Sohne"),
+      local("Söhne Buch"),
+      local("Sohne Buch");
   }
 
-  .heroCopy {
-    margin-top: 130px;
+  :root {
+    --font-canela: "Canela", "Times New Roman", serif;
+    --font-sohne: "Sohne", "Helvetica Neue", Arial, sans-serif;
   }
 
-  .heroCopy h1 {
-    font-size: clamp(3.5rem, 17vw, 6.8rem);
+  html {
+    scroll-behavior: smooth;
   }
 
-  .goldButton {
-    margin-top: 90px;
+  body {
+    margin: 0;
+    background: #f4f4f4;
+    color: #030303;
+    font-family: var(--font-sohne);
   }
 
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-.mediaWrap {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  background: #e9e9e9;
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
 }
 
-.workLarge .mediaWrap {
-  height: 590px;
+@layer utilities {
+  .font-canela {
+    font-family: var(--font-canela);
+  }
+
+  .font-sohne {
+    font-family: var(--font-sohne);
+  }
 }
 
-.workSmall .mediaWrap {
-  height: 280px;
-}
+@layer components {
+  .premium-button {
+    --button-bg: #000;
+    --button-fg: #fff;
+    --button-hover-bg: #edc544;
+    --button-hover-fg: #000;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--button-bg);
+    color: var(--button-fg);
+    font-family: var(--font-sohne);
+    transition:
+      color 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      letter-spacing 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
-.mediaWrap img,
-.mediaWrap video {
-  object-fit: cover;
-}
+  .premium-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--button-hover-bg);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 820ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
+  .premium-button:hover {
+    color: var(--button-hover-fg);
+    font-family: var(--font-canela);
+    letter-spacing: 0.16em;
+    transform: translateY(-1px);
+  }
 
+  .premium-button:hover::before {
+    transform: scaleX(1);
+  }
 
+  .premium-button > span,
+  .premium-button > svg {
+    position: relative;
+    z-index: 1;
+  }
+
+  .premium-button svg {
+    transition: transform 820ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .premium-button:hover svg {
+    transform: translateX(8px);
+  }
+
+  .premium-button-gold {
+    --button-bg: #edc544;
+    --button-fg: #000;
+    --button-hover-bg: #000;
+    --button-hover-fg: #fff;
+  }
+
+  .premium-button-light {
+    --button-bg: #e5e5e5;
+    --button-fg: #000;
+    --button-hover-bg: #000;
+    --button-hover-fg: #fff;
+  }
+
+  .hero-scroll-section {
+    --hero-bg-scale: 1;
+    --hero-bg-y: 0px;
+    --hero-logo-opacity: 1;
+    --hero-logo-scale: 1;
+    --hero-logo-y: 0px;
+    --hero-text-opacity: 1;
+    --hero-text-y: 0px;
+    --hero-button-opacity: 1;
+    --hero-button-y: 0px;
+  }
+
+  .hero-background-scroll {
+    transform: translate3d(0, var(--hero-bg-y), 0) scale(var(--hero-bg-scale));
+    transform-origin: center top;
+    will-change: transform;
+  }
+
+  .hero-logo-scroll-motion {
+    opacity: var(--hero-logo-opacity);
+    transform: translate3d(0, var(--hero-logo-y), 0) scale(var(--hero-logo-scale));
+    transform-origin: center center;
+    will-change: transform, opacity;
+  }
+
+  .hero-text-scroll-motion {
+    opacity: var(--hero-text-opacity);
+    transform: translate3d(0, var(--hero-text-y), 0);
+    transform-origin: center center;
+    will-change: transform, opacity;
+  }
+
+  .hero-button-scroll-motion {
+    opacity: var(--hero-button-opacity);
+    transform: translate3d(0, var(--hero-button-y), 0);
+    will-change: transform, opacity;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-background-scroll,
+    .hero-logo-scroll-motion,
+    .hero-text-scroll-motion,
+    .hero-button-scroll-motion {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .premium-cursor,
+  .premium-cursor-dot {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    body {
+      cursor: none;
+    }
+
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    label {
+      cursor: none;
+    }
+
+    .premium-cursor,
+    .premium-cursor-dot {
+      pointer-events: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      display: block;
+      border-radius: 9999px;
+      mix-blend-mode: difference;
+      transform: translate3d(-50%, -50%, 0);
+    }
+
+    .premium-cursor {
+      display: grid;
+      width: 48px;
+      height: 48px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      background: rgba(255, 255, 255, 0.02);
+      color: #fff;
+      font-family: var(--font-sohne);
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.16em;
+      transition:
+        width 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        height 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 260ms ease;
+    }
+
+    .premium-cursor span {
+      transform: translateX(0.08em);
+      transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .premium-cursor-dot {
+      width: 4px;
+      height: 4px;
+      background: #fff;
+      transition:
+        width 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        height 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 260ms ease;
+    }
+
+    body.cursor-active .premium-cursor {
+      width: 74px;
+      height: 74px;
+      border-color: rgba(237, 197, 68, 0.95);
+      color: #edc544;
+    }
+
+    body.cursor-active .premium-cursor span {
+      transform: translateX(0.08em) scale(1.12);
+    }
+
+    body.cursor-active .premium-cursor-dot {
+      width: 7px;
+      height: 7px;
+      background: #edc544;
+    }
+
+    body.cursor-hidden .premium-cursor,
+    body.cursor-hidden .premium-cursor-dot {
+      opacity: 0;
+    }
+  }
+
+  .adminLogin {
+    @apply grid min-h-screen place-items-center bg-black px-5 py-10 text-zinc-950;
+  }
+
+  .loginPanel {
+    @apply grid w-full max-w-md gap-5 border border-zinc-800 bg-white p-8 shadow-2xl;
+  }
+
+  .loginPanel h1 {
+    @apply text-4xl font-black uppercase leading-none;
+  }
+
+  .loginPanel p:not(.kicker) {
+    @apply text-sm leading-6 text-zinc-600;
+  }
+
+  .loginPanel label {
+    @apply text-xs font-bold uppercase tracking-[0.18em] text-zinc-500;
+  }
+
+  .loginPanel input {
+    @apply w-full border border-zinc-300 bg-zinc-50 px-4 py-4 text-sm outline-none transition focus:border-black focus:bg-white;
+  }
+
+  .loginPanel button,
+  .adminTop a,
+  .adminTop button,
+  .fieldSave,
+  .addButton {
+    @apply inline-flex h-11 items-center justify-center border border-black bg-black px-6 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-amber-400 hover:text-black;
+  }
+
+  .admin {
+    @apply min-h-screen bg-zinc-100 text-zinc-950;
+  }
+
+  .adminDashboard {
+    @apply grid max-w-none grid-cols-1 gap-6 p-4 md:grid-cols-[260px_minmax(0,1fr)] md:p-6;
+  }
+
+  .adminSidebar {
+    @apply border border-zinc-300 bg-white p-5 shadow-sm md:sticky md:top-6 md:h-[calc(100vh-48px)] md:overflow-auto;
+  }
+
+  .adminSidebar strong {
+    @apply mt-2 block text-3xl font-black lowercase;
+  }
+
+  .adminSidebar nav {
+    @apply mt-8 grid;
+  }
+
+  .adminSidebar a {
+    @apply border-t border-zinc-200 py-3 text-xs font-bold uppercase tracking-[0.16em] text-zinc-500 transition hover:text-black;
+  }
+
+  .adminContent {
+    @apply min-w-0;
+  }
+
+  .adminTop {
+    @apply mb-6 flex flex-col justify-between gap-6 border border-zinc-300 bg-white p-6 shadow-sm md:flex-row md:items-end;
+  }
+
+  .adminTop h1 {
+    @apply mt-2 text-4xl font-black uppercase leading-none md:text-5xl;
+  }
+
+  .adminTop p:not(.kicker) {
+    @apply mt-3 max-w-2xl text-sm leading-6 text-zinc-600;
+  }
+
+  .adminActions {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .adminTop button {
+    @apply bg-white text-black hover:bg-black hover:text-white;
+  }
+
+  .statusBar {
+    @apply mb-4 grid grid-cols-1 gap-3 md:grid-cols-3;
+  }
+
+  .statusBar div {
+    @apply border border-zinc-300 bg-white p-5 shadow-sm;
+  }
+
+  .statusBar span {
+    @apply block text-xs font-bold uppercase tracking-[0.16em] text-zinc-500;
+  }
+
+  .statusBar strong {
+    @apply mt-2 block text-3xl font-black uppercase;
+  }
+
+  .dashboardMessage {
+    @apply mb-4 border border-zinc-300 bg-white p-4;
+  }
+
+  .kicker {
+    @apply text-xs font-bold uppercase tracking-[0.24em] text-amber-500;
+  }
+
+  .panel {
+    @apply mb-6 scroll-mt-6 border border-zinc-300 bg-white p-5 shadow-sm md:p-6;
+  }
+
+  .panelHeader {
+    @apply mb-6 flex flex-col gap-2 border-b border-zinc-200 pb-5 md:flex-row md:items-end md:justify-between;
+  }
+
+  .panel h2 {
+    @apply text-2xl font-black uppercase leading-none md:text-3xl;
+  }
+
+  .nested {
+    @apply mt-6 border-t border-zinc-200 pt-5;
+  }
+
+  .nested h3 {
+    @apply mb-4 text-sm font-black uppercase tracking-[0.18em];
+  }
+
+  .field {
+    @apply grid gap-2;
+  }
+
+  .field + .field {
+    @apply mt-4;
+  }
+
+  .field label,
+  .panel > label,
+  .nested > label {
+    @apply text-xs font-bold uppercase tracking-[0.16em] text-zinc-500;
+  }
+
+  .fieldControl {
+    @apply grid gap-2 md:grid-cols-[minmax(0,1fr)_120px];
+  }
+
+  .mediaControl {
+    @apply md:grid-cols-[minmax(0,1fr)_minmax(180px,260px)_120px];
+  }
+
+  .compactControl {
+    @apply md:grid-cols-[220px_120px];
+  }
+
+  .field input,
+  .field textarea,
+  .field select,
+  .nested select {
+    @apply w-full border border-zinc-300 bg-zinc-50 px-3 py-3 text-sm outline-none transition focus:border-black focus:bg-white;
+  }
+
+  .field textarea {
+    @apply min-h-32 resize-y;
+  }
+
+  .fieldSave {
+    @apply min-h-11 px-4;
+  }
+
+  .addButton {
+    @apply mt-6 bg-zinc-200 text-black hover:bg-black hover:text-white;
+  }
+
+  .notice {
+    @apply text-sm text-zinc-600;
+  }
+
+  .error {
+    @apply text-sm font-bold text-red-600;
+  }
 }
