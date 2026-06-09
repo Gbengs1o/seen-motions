@@ -29,6 +29,10 @@ async function loadCloudinary() {
   return module.v2;
 }
 
+function hasBlobStorage() {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID || process.env.VERCEL);
+}
+
 export async function POST(request: Request) {
   const adminPassword = process.env.ADMIN_PASSWORD || 'seen-site';
   const suppliedPassword = request.headers.get('x-admin-password');
@@ -49,7 +53,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'No file received.' }, { status: 400 });
   }
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  if (hasBlobStorage()) {
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'upload';
     const blob = await put(`media/${Date.now()}-${safeName}`, file, {
       access: 'public',

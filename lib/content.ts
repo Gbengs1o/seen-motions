@@ -72,35 +72,43 @@ export type SiteContent = {
 const contentPath = path.join(process.cwd(), 'data', 'content.json');
 const blobContentPath = 'cms/content.json';
 
+function hasBlobStorage() {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID || process.env.VERCEL);
+}
+
 async function getLocalContent(): Promise<SiteContent> {
   const raw = await fs.readFile(contentPath, 'utf8');
   return JSON.parse(raw);
 }
 
 async function getBlobContent(): Promise<SiteContent | null> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  if (!hasBlobStorage()) {
     return null;
   }
 
-  const { blobs } = await list({
-    prefix: blobContentPath,
-    limit: 1
-  });
-  const blob = blobs.find((item) => item.pathname === blobContentPath) || blobs[0];
+  try {
+    const { blobs } = await list({
+      prefix: blobContentPath,
+      limit: 1
+    });
+    const blob = blobs.find((item) => item.pathname === blobContentPath) || blobs[0];
 
-  if (!blob?.url) {
+    if (!blob?.url) {
+      return null;
+    }
+
+    const response = await fetch(`${blob.url}?ts=${Date.now()}`, {
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return response.json();
+  } catch {
     return null;
   }
-
-  const response = await fetch(`${blob.url}?ts=${Date.now()}`, {
-    cache: 'no-store'
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  return response.json();
 }
 
 export async function getContent(): Promise<SiteContent> {
@@ -109,7 +117,7 @@ export async function getContent(): Promise<SiteContent> {
 }
 
 export async function saveContent(content: SiteContent) {
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  if (hasBlobStorage()) {
     await put(blobContentPath, JSON.stringify(content, null, 2), {
       access: 'public',
       allowOverwrite: true,
