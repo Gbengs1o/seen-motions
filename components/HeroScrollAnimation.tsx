@@ -35,7 +35,7 @@ export default function HeroScrollAnimation() {
       hero.style.setProperty('--hero-logo-y', `${logo * -340}px`);
       hero.style.setProperty('--hero-text-opacity', `${1 - text}`);
       hero.style.setProperty('--hero-text-y', `${text * -270}px`);
-      hero.style.setProperty('--hero-button-opacity', `${1 - buttonExit}`);
+      hero.style.setProperty('--hero-button-opacity', '1');
       hero.style.setProperty('--hero-button-y', `${buttonSettle * -10 + buttonExit * -300}px`);
       frame = 0;
     };
