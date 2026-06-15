@@ -1,4 +1,4 @@
-import type { WorkItem } from './content';
+import type { CategoryItem, WorkItem } from './content';
 
 export function slugify(value: string) {
   return value
@@ -18,4 +18,25 @@ export function hasWorkMedia(work: WorkItem) {
 
 export function workThumbnail(work: WorkItem) {
   return work.thumbnailUrl || work.mediaUrl || '';
+}
+
+export function categorySlug(category: Pick<CategoryItem, 'slug' | 'name'>) {
+  return category.slug?.trim() || slugify(category.name);
+}
+
+export function categoryHref(category: Pick<CategoryItem, 'slug' | 'name'>) {
+  return `/portfolio/category/${categorySlug(category)}`;
+}
+
+export function workCategorySlugs(work: WorkItem) {
+  return (work.categorySlugs || []).map((slug) => slug.trim()).filter(Boolean);
+}
+
+export function workMatchesCategory(work: WorkItem, slug: string) {
+  return workCategorySlugs(work).includes(slug);
+}
+
+export function categoriesForWork(work: WorkItem, categories: CategoryItem[]) {
+  const slugs = new Set(workCategorySlugs(work));
+  return categories.filter((category) => slugs.has(categorySlug(category)));
 }

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { getContent } from '@/lib/content';
-import { hasWorkMedia, workSlug, workThumbnail } from '@/lib/work-utils';
+import { categoriesForWork, categoryHref, hasWorkMedia, workSlug, workThumbnail } from '@/lib/work-utils';
 
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -46,6 +46,8 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
   }
 
   const discipline = 'discipline' in work && typeof work.discipline === 'string' ? work.discipline : '';
+  const categories = categoriesForWork(work, content.portfolio.categories || []);
+  const socialLinks = work.socialLinks || [];
 
   return (
     <main className="min-h-screen bg-[#f7f7f7] text-black">
@@ -93,6 +95,49 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
               {work.description}
             </p>
           ) : null}
+
+          <div className="mt-8 grid gap-8 border-t border-zinc-200 pt-8 md:grid-cols-2">
+            {categories.length ? (
+              <div>
+                <h2 className="font-sohne text-[10px] font-black uppercase tracking-[0.24em] text-[#d8ad21]">
+                  Categories
+                </h2>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {categories.map((category) => (
+                    <a
+                      className="border border-zinc-300 px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-zinc-600 transition hover:border-black hover:bg-black hover:text-white"
+                      href={categoryHref(category)}
+                      key={category.slug || category.name}
+                    >
+                      {category.name}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {socialLinks.length ? (
+              <div>
+                <h2 className="font-sohne text-[10px] font-black uppercase tracking-[0.24em] text-[#d8ad21]">
+                  Links
+                </h2>
+                <div className="mt-4 grid gap-2">
+                  {socialLinks.map((link) => (
+                    <a
+                      className="group flex items-center justify-between border-b border-zinc-200 py-3 text-sm font-bold text-zinc-700 transition hover:text-black"
+                      href={link.href}
+                      key={`${link.label}-${link.href}`}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <span>{link.label}</span>
+                      <ExternalLink className="h-4 w-4 text-[#d8ad21] transition group-hover:translate-x-1" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
       </section>
 

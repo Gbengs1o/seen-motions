@@ -438,6 +438,22 @@
     @apply mt-6 bg-zinc-200 text-black hover:bg-black hover:text-white;
   }
 
+  .removeButton {
+    @apply mt-4 inline-flex h-10 items-center justify-center border border-red-300 bg-white px-4 text-[10px] font-black uppercase tracking-[0.16em] text-red-600 transition hover:bg-red-600 hover:text-white;
+  }
+
+  .categoryPicker {
+    @apply grid gap-3 md:grid-cols-[repeat(3,minmax(0,1fr))_120px];
+  }
+
+  .categoryChoice {
+    @apply flex min-h-11 items-center gap-3 border border-zinc-300 bg-zinc-50 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-zinc-600 transition hover:border-black hover:bg-white hover:text-black;
+  }
+
+  .categoryChoice input {
+    @apply h-4 w-4 accent-black;
+  }
+
   .notice {
     @apply text-sm text-zinc-600;
   }

@@ -41,7 +41,20 @@
         "slug": "collage-sample",
         "thumbnailUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/f_auto,q_auto,so_0/v1/seen-motions/collage-sample.jpg?_a=BAMAPqX00",
         "videoUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/v1781015591/seen-motions/collage-sample.mp4",
-        "description": "Sample uploaded work for testing thumbnail preview, hover playback, and the project detail page."
+        "description": "Sample uploaded work for testing thumbnail preview, hover playback, and the project detail page.",
+        "categorySlugs": [
+          "storytelling"
+        ],
+        "socialLinks": [
+          {
+            "label": "Instagram",
+            "href": "https://instagram.com/seenmotions"
+          },
+          {
+            "label": "YouTube",
+            "href": "https://youtube.com/@seenmotions"
+          }
+        ]
       },
       {
         "title": "AURA CAMPAIGN",
@@ -49,7 +62,12 @@
         "slug": "aura-campaign",
         "thumbnailUrl": "https://res.cloudinary.com/dn4h1252u/image/upload/v1781041618/seen-motions/eqavroetr8ara7eoanp2.png",
         "videoUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/v1781041631/seen-motions/v72edmduhk30ge1gzi7g.mp4",
-        "description": "something good"
+        "description": "something good",
+        "categorySlugs": [
+          "tech",
+          "brand-films"
+        ],
+        "socialLinks": []
       },
       {
         "title": "KINETIC FORMS",
@@ -144,6 +162,23 @@
     "countLabel": "01 - 05",
     "featuredButtonLabel": "VIEW PROJECT",
     "projectButtonLabel": "VIEW PROJECT",
+    "categories": [
+      {
+        "name": "Tech",
+        "slug": "tech",
+        "description": "Technology and product-facing motion work."
+      },
+      {
+        "name": "Storytelling",
+        "slug": "storytelling",
+        "description": "Narrative-led films, edits and visual stories."
+      },
+      {
+        "name": "Brand Films",
+        "slug": "brand-films",
+        "description": "Campaigns, brand visuals and commercial motion."
+      }
+    ],
     "projects": [
       {
         "title": "COLLAGE SAMPLE",
@@ -153,7 +188,20 @@
         "buttonLabel": "VIEW PROJECT",
         "thumbnailUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/f_auto,q_auto,so_0/v1/seen-motions/collage-sample.jpg?_a=BAMAPqX00",
         "videoUrl": "https://res.cloudinary.com/dn4h1252u/video/upload/v1781015591/seen-motions/collage-sample.mp4",
-        "description": "Sample uploaded work for testing thumbnail preview, hover playback, and the project detail page."
+        "description": "Sample uploaded work for testing thumbnail preview, hover playback, and the project detail page.",
+        "categorySlugs": [
+          "storytelling"
+        ],
+        "socialLinks": [
+          {
+            "label": "Instagram",
+            "href": "https://instagram.com/seenmotions"
+          },
+          {
+            "label": "YouTube",
+            "href": "https://youtube.com/@seenmotions"
+          }
+        ]
       },
       {
         "title": "MONOLITHIC FORMS",

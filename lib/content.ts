@@ -4,6 +4,7 @@ import { list, put } from '@vercel/blob';
 
 export type LinkItem = { label: string; href: string };
 export type NavItem = LinkItem & { sectionId?: string };
+export type CategoryItem = { name: string; slug: string; description?: string };
 export type WorkItem = {
   title: string;
   year: string;
@@ -11,6 +12,8 @@ export type WorkItem = {
   thumbnailUrl: string;
   videoUrl: string;
   description?: string;
+  categorySlugs?: string[];
+  socialLinks?: LinkItem[];
   mediaUrl?: string;
   type?: 'image' | 'video';
 };
@@ -64,6 +67,7 @@ export type SiteContent = {
     countLabel: string;
     featuredButtonLabel: string;
     projectButtonLabel: string;
+    categories: CategoryItem[];
     projects: PortfolioProject[];
   };
   footer: { copyright: string; links: LinkItem[] };
@@ -112,8 +116,9 @@ async function getBlobContent(): Promise<SiteContent | null> {
 }
 
 export async function getContent(): Promise<SiteContent> {
+  const localContent = await getLocalContent();
   const blobContent = await getBlobContent();
-  return blobContent || getLocalContent();
+  return normalizeContent(blobContent || localContent, localContent);
 }
 
 export async function saveContent(content: SiteContent) {
@@ -129,4 +134,44 @@ export async function saveContent(content: SiteContent) {
 
   await fs.mkdir(path.dirname(contentPath), { recursive: true });
   await fs.writeFile(contentPath, JSON.stringify(content, null, 2));
+}
+
+function normalizeContent(content: SiteContent, defaults: SiteContent): SiteContent {
+  return {
+    ...content,
+    works: {
+      ...content.works,
+      items: normalizeWorks(content.works.items || [], defaults.works.items || [])
+    },
+    portfolio: {
+      ...content.portfolio,
+      categories: Array.isArray(content.portfolio.categories)
+        ? content.portfolio.categories
+        : defaults.portfolio.categories || [],
+      projects: normalizeWorks(content.portfolio.projects || [], defaults.portfolio.projects || []) as PortfolioProject[]
+    }
+  };
+}
+
+function normalizeWorks<T extends WorkItem>(works: T[], defaults: WorkItem[]): T[] {
+  return works.map((work) => {
+    const fallback = defaults.find((item) => workKey(item) === workKey(work));
+    return {
+      ...work,
+      categorySlugs: Array.isArray(work.categorySlugs) ? work.categorySlugs : fallback?.categorySlugs || [],
+      socialLinks: Array.isArray(work.socialLinks) ? work.socialLinks : fallback?.socialLinks || []
+    };
+  });
+}
+
+function workKey(work: WorkItem) {
+  return contentSlug(work.slug || work.title);
+}
+
+function contentSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 }

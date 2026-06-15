@@ -2,12 +2,13 @@
 
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
-import type { LinkItem, PortfolioProject, SiteContent, WorkItem } from '@/lib/content';
+import type { CategoryItem, LinkItem, PortfolioProject, SiteContent, WorkItem } from '@/lib/content';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
 const blankLink: LinkItem = { label: '', href: '' };
-const blankWork: WorkItem = { title: '', year: '', slug: '', thumbnailUrl: '', videoUrl: '', description: '' };
+const blankCategory: CategoryItem = { name: '', slug: '', description: '' };
+const blankWork: WorkItem = { title: '', year: '', slug: '', thumbnailUrl: '', videoUrl: '', description: '', categorySlugs: [], socialLinks: [] };
 const blankProject: PortfolioProject = {
   title: '',
   year: '',
@@ -16,7 +17,9 @@ const blankProject: PortfolioProject = {
   buttonLabel: 'VIEW PROJECT',
   thumbnailUrl: '',
   videoUrl: '',
-  description: ''
+  description: '',
+  categorySlugs: [],
+  socialLinks: []
 };
 
 const panels = [
@@ -27,6 +30,7 @@ const panels = [
   ['homepage-vision', 'Vision'],
   ['contact-page', 'Contact Page'],
   ['portfolio-page', 'Portfolio Page'],
+  ['portfolio-categories', 'Portfolio Categories'],
   ['project-apartment', 'Project Apartment'],
   ['footer-links', 'Footer Links']
 ];
@@ -80,11 +84,28 @@ export default function AdminPage() {
   const addToArray = (path: string, value: any, label: string) => {
     if (!content) return;
     const copy: any = structuredClone(content);
-    const target = path.split('.').reduce((pointer, key) => pointer[key], copy);
+    const keys = path.split('.');
+    const last = keys.at(-1)!;
+    const parent = keys.slice(0, -1).reduce((pointer, key) => pointer[key], copy);
+    if (!Array.isArray(parent[last])) {
+      parent[last] = [];
+    }
+    const target = parent[last];
     target.push(value);
     setContent(copy);
     setStatus('idle');
     setMessage(`${label} added. Fill it in, then save the fields you changed.`);
+  };
+
+  const removeFromArray = (path: string, index: number, label: string) => {
+    if (!content) return;
+    const copy: any = structuredClone(content);
+    const target = path.split('.').reduce((pointer, key) => pointer[key], copy);
+    if (!Array.isArray(target)) return;
+    target.splice(index, 1);
+    setContent(copy);
+    setStatus('idle');
+    setMessage(`${label} removed. Save any field in this panel to publish the removal.`);
   };
 
   const save = async (label = 'Field') => {
@@ -248,11 +269,15 @@ export default function AdminPage() {
             <WorkEditor
               key={index}
               basePath={`works.items.${index}`}
+              categories={content.portfolio.categories || []}
               item={item}
               title={`Homepage work ${index + 1}`}
               update={update}
               upload={upload}
               save={save}
+              addToArray={addToArray}
+              removeFromArray={removeFromArray}
+              onRemove={() => removeFromArray('works.items', index, `Homepage work ${index + 1}`)}
             />
           ))}
           <button className="addButton" type="button" onClick={() => addToArray('works.items', blankWork, 'Homepage work')}>Add homepage work</button>
@@ -329,17 +354,36 @@ export default function AdminPage() {
           <Field label="Project fallback button" value={content.portfolio.projectButtonLabel} onChange={(v) => update('portfolio.projectButtonLabel', v)} onSave={save} />
         </Panel>
 
+        <Panel id="portfolio-categories" eyebrow="Portfolio" title="Categories">
+          <p className="notice">Each category gets a shareable page at /portfolio/category/category-slug.</p>
+          {(content.portfolio.categories || []).map((category, index) => (
+            <CategoryEditor
+              basePath={`portfolio.categories.${index}`}
+              category={category}
+              key={`${category.slug}-${index}`}
+              onRemove={() => removeFromArray('portfolio.categories', index, `Category ${index + 1}`)}
+              save={save}
+              update={update}
+            />
+          ))}
+          <button className="addButton" type="button" onClick={() => addToArray('portfolio.categories', blankCategory, 'Category')}>Add category</button>
+        </Panel>
+
         <Panel id="project-apartment" eyebrow="Portfolio" title="Project Apartment">
           <p className="notice">Portfolio projects live here separately from the other page text.</p>
           {content.portfolio.projects.map((project, index) => (
             <ProjectEditor
               key={index}
               basePath={`portfolio.projects.${index}`}
+              categories={content.portfolio.categories || []}
               project={project}
               title={`Portfolio project ${index + 1}`}
               update={update}
               upload={upload}
               save={save}
+              addToArray={addToArray}
+              removeFromArray={removeFromArray}
+              onRemove={() => removeFromArray('portfolio.projects', index, `Portfolio project ${index + 1}`)}
             />
           ))}
           <button className="addButton" type="button" onClick={() => addToArray('portfolio.projects', blankProject, 'Portfolio project')}>Add portfolio project</button>
@@ -401,17 +445,45 @@ function LinkEditor({
   basePath,
   link,
   update,
-  save
+  save,
+  onRemove
 }: {
   basePath: string;
   link: LinkItem;
   update: (path: string, value: any) => void;
   save: (label?: string) => void;
+  onRemove?: () => void;
 }) {
   return (
     <div className="nested">
       <Field label="Label" value={link.label} onChange={(v) => update(`${basePath}.label`, v)} onSave={save} />
       <Field label="Href" value={link.href} onChange={(v) => update(`${basePath}.href`, v)} onSave={save} />
+      {onRemove ? <button className="removeButton" type="button" onClick={onRemove}>Remove link</button> : null}
+    </div>
+  );
+}
+
+function CategoryEditor({
+  basePath,
+  category,
+  update,
+  save,
+  onRemove
+}: {
+  basePath: string;
+  category: CategoryItem;
+  update: (path: string, value: any) => void;
+  save: (label?: string) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="nested">
+      <h3>{category.name || 'New category'}</h3>
+      <Field label="Name" value={category.name} onChange={(v) => update(`${basePath}.name`, v)} onSave={save} />
+      <Field label="Slug" value={category.slug} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
+      <Field label="Description" value={category.description || ''} textarea onChange={(v) => update(`${basePath}.description`, v)} onSave={save} />
+      <p className="notice">Share link: /portfolio/category/{category.slug || 'category-slug'}</p>
+      <button className="removeButton" type="button" onClick={onRemove}>Delete category</button>
     </div>
   );
 }
@@ -444,17 +516,25 @@ function MediaField({
 function WorkEditor({
   title,
   basePath,
+  categories,
   item,
   update,
   upload,
-  save
+  save,
+  addToArray,
+  removeFromArray,
+  onRemove
 }: {
   title: string;
   basePath: string;
+  categories: CategoryItem[];
   item: WorkItem;
   update: (path: string, value: any) => void;
   upload: (file: File, path: string, label: string) => void;
   save: (label?: string) => void;
+  addToArray: (path: string, value: any, label: string) => void;
+  removeFromArray: (path: string, index: number, label: string) => void;
+  onRemove: () => void;
 }) {
   return (
     <div className="nested">
@@ -462,6 +542,13 @@ function WorkEditor({
       <Field label="Title" value={item.title} onChange={(v) => update(`${basePath}.title`, v)} onSave={save} />
       <Field label="Year" value={item.year} onChange={(v) => update(`${basePath}.year`, v)} onSave={save} />
       <Field label="Detail page slug" value={item.slug || ''} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
+      <CategoryPicker
+        categories={categories}
+        label="Assigned categories"
+        onChange={(slugs) => update(`${basePath}.categorySlugs`, slugs)}
+        onSave={save}
+        value={item.categorySlugs || []}
+      />
       <MediaField
         label="Thumbnail image URL"
         value={item.thumbnailUrl || item.mediaUrl || ''}
@@ -477,6 +564,21 @@ function WorkEditor({
         onSave={save}
       />
       <Field label="Detail page description" value={item.description || ''} textarea onChange={(v) => update(`${basePath}.description`, v)} onSave={save} />
+      <div className="nested">
+        <h3>Client / social links</h3>
+        {(item.socialLinks || []).map((link, index) => (
+          <LinkEditor
+            basePath={`${basePath}.socialLinks.${index}`}
+            key={`${link.label}-${index}`}
+            link={link}
+            onRemove={() => removeFromArray(`${basePath}.socialLinks`, index, `${title} link ${index + 1}`)}
+            save={save}
+            update={update}
+          />
+        ))}
+        <button className="addButton" type="button" onClick={() => addToArray(`${basePath}.socialLinks`, blankLink, `${title} social link`)}>Add social link</button>
+      </div>
+      <button className="removeButton" type="button" onClick={onRemove}>Delete video</button>
     </div>
   );
 }
@@ -484,17 +586,25 @@ function WorkEditor({
 function ProjectEditor({
   title,
   basePath,
+  categories,
   project,
   update,
   upload,
-  save
+  save,
+  addToArray,
+  removeFromArray,
+  onRemove
 }: {
   title: string;
   basePath: string;
+  categories: CategoryItem[];
   project: PortfolioProject;
   update: (path: string, value: any) => void;
   upload: (file: File, path: string, label: string) => void;
   save: (label?: string) => void;
+  addToArray: (path: string, value: any, label: string) => void;
+  removeFromArray: (path: string, index: number, label: string) => void;
+  onRemove: () => void;
 }) {
   return (
     <div className="nested">
@@ -504,6 +614,13 @@ function ProjectEditor({
       <Field label="Detail page slug" value={project.slug || ''} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
       <Field label="Discipline" value={project.discipline} onChange={(v) => update(`${basePath}.discipline`, v)} onSave={save} />
       <Field label="Button label" value={project.buttonLabel} onChange={(v) => update(`${basePath}.buttonLabel`, v)} onSave={save} />
+      <CategoryPicker
+        categories={categories}
+        label="Assigned categories"
+        onChange={(slugs) => update(`${basePath}.categorySlugs`, slugs)}
+        onSave={save}
+        value={project.categorySlugs || []}
+      />
       <MediaField
         label="Thumbnail image URL"
         value={project.thumbnailUrl || project.mediaUrl || ''}
@@ -519,6 +636,78 @@ function ProjectEditor({
         onSave={save}
       />
       <Field label="Detail page description" value={project.description || ''} textarea onChange={(v) => update(`${basePath}.description`, v)} onSave={save} />
+      <div className="nested">
+        <h3>Client / social links</h3>
+        {(project.socialLinks || []).map((link, index) => (
+          <LinkEditor
+            basePath={`${basePath}.socialLinks.${index}`}
+            key={`${link.label}-${index}`}
+            link={link}
+            onRemove={() => removeFromArray(`${basePath}.socialLinks`, index, `${title} link ${index + 1}`)}
+            save={save}
+            update={update}
+          />
+        ))}
+        <button className="addButton" type="button" onClick={() => addToArray(`${basePath}.socialLinks`, blankLink, `${title} social link`)}>Add social link</button>
+      </div>
+      <button className="removeButton" type="button" onClick={onRemove}>Delete video</button>
     </div>
   );
+}
+
+function CategoryPicker({
+  label,
+  value,
+  categories,
+  onChange,
+  onSave
+}: {
+  label: string;
+  value: string[];
+  categories: CategoryItem[];
+  onChange: (value: string[]) => void;
+  onSave: (label?: string) => void;
+}) {
+  const selected = new Set(value);
+  const toggle = (slug: string) => {
+    if (!slug) return;
+    const next = selected.has(slug)
+      ? value.filter((item) => item !== slug)
+      : [...value, slug];
+    onChange(next);
+  };
+
+  return (
+    <div className="field">
+      <label>{label}</label>
+      {categories.length ? (
+        <div className="categoryPicker">
+          {categories.map((category) => {
+            const slug = adminCategorySlug(category);
+            return (
+              <label className="categoryChoice" key={slug || category.name}>
+                <input
+                  checked={selected.has(slug)}
+                  onChange={() => toggle(slug)}
+                  type="checkbox"
+                />
+                <span>{category.name}</span>
+              </label>
+            );
+          })}
+          <button className="fieldSave" type="button" onClick={() => onSave(label)}>Save</button>
+        </div>
+      ) : (
+        <p className="notice">Create a category first, then assign this video to it.</p>
+      )}
+    </div>
+  );
+}
+
+function adminCategorySlug(category: CategoryItem) {
+  return (category.slug || category.name)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 }
