@@ -25,13 +25,13 @@ const blankProject: PortfolioProject = {
 const panels = [
   ['site-navigation', 'Site Navigation'],
   ['homepage-hero', 'Homepage Hero'],
-  ['homepage-works', 'Selected Works'],
+  ['homepage-works', 'Homepage Featured Videos'],
   ['homepage-services', 'Services'],
   ['homepage-vision', 'Vision'],
   ['contact-page', 'Contact Page'],
-  ['portfolio-page', 'Portfolio Page'],
-  ['portfolio-categories', 'Portfolio Categories'],
-  ['project-apartment', 'Project Apartment'],
+  ['portfolio-page', 'Portfolio Text'],
+  ['portfolio-categories', 'Video Categories'],
+  ['project-apartment', 'Portfolio Videos'],
   ['footer-links', 'Footer Links']
 ];
 
@@ -346,6 +346,10 @@ export default function AdminPage() {
         </Panel>
 
         <Panel id="portfolio-page" eyebrow="Portfolio" title="Portfolio Page">
+          <div className="adminGuide">
+            <strong>What this controls</strong>
+            <p>This is only the text around the portfolio page. Add, edit and organize the actual videos in the next two panels.</p>
+          </div>
           <Field label="Metadata title" value={content.portfolio.pageTitle} onChange={(v) => update('portfolio.pageTitle', v)} onSave={save} />
           <Field label="Metadata description" value={content.portfolio.pageDescription} onChange={(v) => update('portfolio.pageDescription', v)} onSave={save} />
           <Field label="Page heading" value={content.portfolio.title} textarea onChange={(v) => update('portfolio.title', v)} onSave={save} />
@@ -354,39 +358,57 @@ export default function AdminPage() {
           <Field label="Project fallback button" value={content.portfolio.projectButtonLabel} onChange={(v) => update('portfolio.projectButtonLabel', v)} onSave={save} />
         </Panel>
 
-        <Panel id="portfolio-categories" eyebrow="Portfolio" title="Categories">
-          <p className="notice">Each category gets a shareable page at /portfolio/category/category-slug.</p>
-          {(content.portfolio.categories || []).map((category, index) => (
-            <CategoryEditor
-              basePath={`portfolio.categories.${index}`}
-              category={category}
-              key={`${category.slug}-${index}`}
-              onRemove={() => removeFromArray('portfolio.categories', index, `Category ${index + 1}`)}
-              save={save}
-              update={update}
-            />
-          ))}
-          <button className="addButton" type="button" onClick={() => addToArray('portfolio.categories', blankCategory, 'Category')}>Add category</button>
+        <Panel id="portfolio-categories" eyebrow="Portfolio" title="Video Categories">
+          <div className="portfolioManagerIntro">
+            <div>
+              <strong>Make groups for your work.</strong>
+              <p>Examples: Tech, Storytelling, Brand Films. Each category automatically gets a shareable link.</p>
+            </div>
+            <button className="addButton addButtonInline" type="button" onClick={() => addToArray('portfolio.categories', blankCategory, 'Category')}>Add category</button>
+          </div>
+
+          <div className="categoryList">
+            {(content.portfolio.categories || []).map((category, index) => (
+              <CategoryEditor
+                basePath={`portfolio.categories.${index}`}
+                category={category}
+                index={index}
+                key={`${category.slug}-${index}`}
+                onRemove={() => removeFromArray('portfolio.categories', index, `Category ${index + 1}`)}
+                save={save}
+                update={update}
+              />
+            ))}
+          </div>
         </Panel>
 
-        <Panel id="project-apartment" eyebrow="Portfolio" title="Project Apartment">
-          <p className="notice">Portfolio projects live here separately from the other page text.</p>
-          {content.portfolio.projects.map((project, index) => (
-            <ProjectEditor
-              key={index}
-              basePath={`portfolio.projects.${index}`}
-              categories={content.portfolio.categories || []}
-              project={project}
-              title={`Portfolio project ${index + 1}`}
-              update={update}
-              upload={upload}
-              save={save}
-              addToArray={addToArray}
-              removeFromArray={removeFromArray}
-              onRemove={() => removeFromArray('portfolio.projects', index, `Portfolio project ${index + 1}`)}
-            />
-          ))}
-          <button className="addButton" type="button" onClick={() => addToArray('portfolio.projects', blankProject, 'Portfolio project')}>Add portfolio project</button>
+        <Panel id="project-apartment" eyebrow="Portfolio" title="Portfolio Videos">
+          <div className="portfolioManagerIntro">
+            <div>
+              <strong>Add the videos people will watch.</strong>
+              <p>Upload a thumbnail, upload or paste the video URL, choose categories, then save each part you changed.</p>
+            </div>
+            <button className="addButton addButtonInline" type="button" onClick={() => addToArray('portfolio.projects', blankProject, 'Portfolio video')}>Add video</button>
+          </div>
+
+          <div className="videoList">
+            {content.portfolio.projects.map((project, index) => (
+              <ProjectEditor
+                key={index}
+                basePath={`portfolio.projects.${index}`}
+                categories={content.portfolio.categories || []}
+                index={index}
+                project={project}
+                title={`Video ${index + 1}`}
+                update={update}
+                upload={upload}
+                save={save}
+                addToArray={addToArray}
+                removeFromArray={removeFromArray}
+                onRemove={() => removeFromArray('portfolio.projects', index, `Portfolio video ${index + 1}`)}
+              />
+            ))}
+          </div>
         </Panel>
 
         <Panel id="footer-links" eyebrow="Global" title="Footer + Social Links">
@@ -466,25 +488,39 @@ function LinkEditor({
 function CategoryEditor({
   basePath,
   category,
+  index,
   update,
   save,
   onRemove
 }: {
   basePath: string;
   category: CategoryItem;
+  index: number;
   update: (path: string, value: any) => void;
   save: (label?: string) => void;
   onRemove: () => void;
 }) {
+  const shareSlug = category.slug || adminCategorySlug(category) || 'category-link';
+
   return (
-    <div className="nested">
-      <h3>{category.name || 'New category'}</h3>
-      <Field label="Name" value={category.name} onChange={(v) => update(`${basePath}.name`, v)} onSave={save} />
-      <Field label="Slug" value={category.slug} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
-      <Field label="Description" value={category.description || ''} textarea onChange={(v) => update(`${basePath}.description`, v)} onSave={save} />
-      <p className="notice">Share link: /portfolio/category/{category.slug || 'category-slug'}</p>
+    <section className="categoryCard">
+      <div className="managerCardHeader">
+        <div>
+          <span>Category {index + 1}</span>
+          <h3>{category.name || 'Untitled category'}</h3>
+        </div>
+        <a href={`/portfolio/category/${shareSlug}`} target="_blank">View</a>
+      </div>
+
+      <div className="friendlyFields">
+        <Field label="Category name" value={category.name} onChange={(v) => update(`${basePath}.name`, v)} onSave={save} />
+        <Field label="Share link ending" value={category.slug} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
+        <Field label="Short description" value={category.description || ''} textarea onChange={(v) => update(`${basePath}.description`, v)} onSave={save} />
+      </div>
+
+      <p className="plainHint">Share link: /portfolio/category/{shareSlug}</p>
       <button className="removeButton" type="button" onClick={onRemove}>Delete category</button>
-    </div>
+    </section>
   );
 }
 
@@ -587,6 +623,7 @@ function ProjectEditor({
   title,
   basePath,
   categories,
+  index,
   project,
   update,
   upload,
@@ -598,6 +635,7 @@ function ProjectEditor({
   title: string;
   basePath: string;
   categories: CategoryItem[];
+  index: number;
   project: PortfolioProject;
   update: (path: string, value: any) => void;
   upload: (file: File, path: string, label: string) => void;
@@ -606,52 +644,108 @@ function ProjectEditor({
   removeFromArray: (path: string, index: number, label: string) => void;
   onRemove: () => void;
 }) {
+  const selectedCategoryNames = categories
+    .filter((category) => (project.categorySlugs || []).includes(adminCategorySlug(category)))
+    .map((category) => category.name);
+  const shareEnding = project.slug || adminCategorySlug({ name: project.title, slug: '' }) || 'video-link';
+
   return (
-    <div className="nested">
-      <h3>{title}</h3>
-      <Field label="Title" value={project.title} onChange={(v) => update(`${basePath}.title`, v)} onSave={save} />
-      <Field label="Year" value={project.year} onChange={(v) => update(`${basePath}.year`, v)} onSave={save} />
-      <Field label="Detail page slug" value={project.slug || ''} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
-      <Field label="Discipline" value={project.discipline} onChange={(v) => update(`${basePath}.discipline`, v)} onSave={save} />
-      <Field label="Button label" value={project.buttonLabel} onChange={(v) => update(`${basePath}.buttonLabel`, v)} onSave={save} />
+    <section className="videoEditor">
+      <div className="videoHeader">
+        <div className="videoPreview">
+          {project.thumbnailUrl || project.mediaUrl ? (
+            <img alt="" src={project.thumbnailUrl || project.mediaUrl} />
+          ) : (
+            <span>No thumbnail yet</span>
+          )}
+        </div>
+        <div>
+          <span>Video {index + 1}</span>
+          <h3>{project.title || title}</h3>
+          <p>{selectedCategoryNames.length ? selectedCategoryNames.join(', ') : 'No category selected yet'}</p>
+          <div className="managerActions">
+            <a href={`/portfolio/${shareEnding}`} target="_blank">View page</a>
+            <button className="removeButton removeButtonInline" type="button" onClick={onRemove}>Delete video</button>
+          </div>
+        </div>
+      </div>
+
+      <div className="managerStep">
+        <span>1</span>
+        <div>
+          <h4>Name and page link</h4>
+          <p>This is what visitors see and the link you can share for this video.</p>
+        </div>
+      </div>
+      <div className="friendlyFields twoColumns">
+        <Field label="Video name" value={project.title} onChange={(v) => update(`${basePath}.title`, v)} onSave={save} />
+        <Field label="Year" value={project.year} onChange={(v) => update(`${basePath}.year`, v)} onSave={save} />
+        <Field label="Share link ending" value={project.slug || ''} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
+        <Field label="Small label under video" value={project.discipline} onChange={(v) => update(`${basePath}.discipline`, v)} onSave={save} />
+      </div>
+
+      <div className="managerStep">
+        <span>2</span>
+        <div>
+          <h4>Choose where it belongs</h4>
+          <p>Pick one or more categories. Those category links will show only matching videos.</p>
+        </div>
+      </div>
       <CategoryPicker
         categories={categories}
-        label="Assigned categories"
+        label="Show this video in"
         onChange={(slugs) => update(`${basePath}.categorySlugs`, slugs)}
         onSave={save}
         value={project.categorySlugs || []}
       />
-      <MediaField
-        label="Thumbnail image URL"
-        value={project.thumbnailUrl || project.mediaUrl || ''}
-        onChange={(v) => update(`${basePath}.thumbnailUrl`, v)}
-        onFile={(f) => upload(f, `${basePath}.thumbnailUrl`, `${title} thumbnail`)}
-        onSave={save}
-      />
-      <MediaField
-        label="Video URL"
-        value={project.videoUrl}
-        onChange={(v) => update(`${basePath}.videoUrl`, v)}
-        onFile={(f) => upload(f, `${basePath}.videoUrl`, `${title} video`)}
-        onSave={save}
-      />
-      <Field label="Detail page description" value={project.description || ''} textarea onChange={(v) => update(`${basePath}.description`, v)} onSave={save} />
-      <div className="nested">
-        <h3>Client / social links</h3>
-        {(project.socialLinks || []).map((link, index) => (
+
+      <div className="managerStep">
+        <span>3</span>
+        <div>
+          <h4>Thumbnail and video</h4>
+          <p>The thumbnail shows first. The video plays on hover and opens on the video page.</p>
+        </div>
+      </div>
+      <div className="friendlyFields">
+        <MediaField
+          label="Thumbnail image"
+          value={project.thumbnailUrl || project.mediaUrl || ''}
+          onChange={(v) => update(`${basePath}.thumbnailUrl`, v)}
+          onFile={(f) => upload(f, `${basePath}.thumbnailUrl`, `${title} thumbnail`)}
+          onSave={save}
+        />
+        <MediaField
+          label="Video file or video URL"
+          value={project.videoUrl}
+          onChange={(v) => update(`${basePath}.videoUrl`, v)}
+          onFile={(f) => upload(f, `${basePath}.videoUrl`, `${title} video`)}
+          onSave={save}
+        />
+      </div>
+
+      <div className="managerStep">
+        <span>4</span>
+        <div>
+          <h4>Description and client links</h4>
+          <p>Add a short note and any client/social links that should appear on the video page.</p>
+        </div>
+      </div>
+      <Field label="About this video" value={project.description || ''} textarea onChange={(v) => update(`${basePath}.description`, v)} onSave={save} />
+
+      <div className="linkList">
+        {(project.socialLinks || []).map((link, linkIndex) => (
           <LinkEditor
-            basePath={`${basePath}.socialLinks.${index}`}
-            key={`${link.label}-${index}`}
+            basePath={`${basePath}.socialLinks.${linkIndex}`}
+            key={`${link.label}-${linkIndex}`}
             link={link}
-            onRemove={() => removeFromArray(`${basePath}.socialLinks`, index, `${title} link ${index + 1}`)}
+            onRemove={() => removeFromArray(`${basePath}.socialLinks`, linkIndex, `${title} link ${linkIndex + 1}`)}
             save={save}
             update={update}
           />
         ))}
-        <button className="addButton" type="button" onClick={() => addToArray(`${basePath}.socialLinks`, blankLink, `${title} social link`)}>Add social link</button>
       </div>
-      <button className="removeButton" type="button" onClick={onRemove}>Delete video</button>
-    </div>
+      <button className="addButton" type="button" onClick={() => addToArray(`${basePath}.socialLinks`, blankLink, `${title} social link`)}>Add client or social link</button>
+    </section>
   );
 }
 

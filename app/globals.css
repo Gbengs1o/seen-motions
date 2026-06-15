@@ -369,6 +369,21 @@
     @apply mb-4 border border-zinc-300 bg-white p-4;
   }
 
+  .adminGuide {
+    @apply mb-6 border border-amber-200 bg-amber-50 p-4;
+  }
+
+  .adminGuide strong,
+  .portfolioManagerIntro strong {
+    @apply block text-sm font-black uppercase tracking-[0.14em] text-zinc-950;
+  }
+
+  .adminGuide p,
+  .portfolioManagerIntro p,
+  .plainHint {
+    @apply mt-2 max-w-3xl text-sm leading-6 text-zinc-600;
+  }
+
   .kicker {
     @apply text-xs font-bold uppercase tracking-[0.24em] text-amber-500;
   }
@@ -438,8 +453,113 @@
     @apply mt-6 bg-zinc-200 text-black hover:bg-black hover:text-white;
   }
 
+  .addButtonInline {
+    @apply mt-0 shrink-0;
+  }
+
   .removeButton {
     @apply mt-4 inline-flex h-10 items-center justify-center border border-red-300 bg-white px-4 text-[10px] font-black uppercase tracking-[0.16em] text-red-600 transition hover:bg-red-600 hover:text-white;
+  }
+
+  .removeButtonInline {
+    @apply mt-0;
+  }
+
+  .portfolioManagerIntro {
+    @apply mb-6 flex flex-col justify-between gap-5 border border-zinc-200 bg-zinc-50 p-5 md:flex-row md:items-center;
+  }
+
+  .categoryList,
+  .videoList,
+  .friendlyFields,
+  .linkList {
+    @apply grid gap-5;
+  }
+
+  .categoryList {
+    @apply md:grid-cols-2;
+  }
+
+  .categoryCard,
+  .videoEditor {
+    @apply border border-zinc-200 bg-white p-5 shadow-sm;
+  }
+
+  .managerCardHeader,
+  .videoHeader {
+    @apply mb-5 flex flex-col justify-between gap-4 border-b border-zinc-200 pb-5 md:flex-row md:items-start;
+  }
+
+  .managerCardHeader span,
+  .videoHeader span {
+    @apply text-[10px] font-black uppercase tracking-[0.2em] text-amber-500;
+  }
+
+  .managerCardHeader h3,
+  .videoHeader h3 {
+    @apply mt-2 text-2xl font-black uppercase leading-none;
+  }
+
+  .managerCardHeader a,
+  .managerActions a {
+    @apply inline-flex h-10 items-center justify-center border border-zinc-300 bg-zinc-50 px-4 text-[10px] font-black uppercase tracking-[0.16em] text-zinc-700 transition hover:border-black hover:bg-black hover:text-white;
+  }
+
+  .friendlyFields.twoColumns {
+    @apply md:grid-cols-2;
+  }
+
+  .friendlyFields .field + .field,
+  .linkList .nested {
+    @apply mt-0;
+  }
+
+  .videoEditor {
+    @apply p-0;
+  }
+
+  .videoEditor > * {
+    @apply mx-5;
+  }
+
+  .videoEditor > :first-child {
+    @apply mx-0 px-5 pt-5;
+  }
+
+  .videoEditor > :last-child {
+    @apply mb-5;
+  }
+
+  .videoPreview {
+    @apply flex aspect-video w-full shrink-0 items-center justify-center overflow-hidden border border-zinc-200 bg-zinc-100 text-xs font-bold uppercase tracking-[0.14em] text-zinc-400 md:w-56;
+  }
+
+  .videoPreview img {
+    @apply h-full w-full object-cover;
+  }
+
+  .videoHeader p {
+    @apply mt-3 text-sm text-zinc-500;
+  }
+
+  .managerActions {
+    @apply mt-5 flex flex-wrap gap-3;
+  }
+
+  .managerStep {
+    @apply mt-6 mb-4 flex gap-4 border-t border-zinc-200 pt-5;
+  }
+
+  .managerStep span {
+    @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-xs font-black text-white;
+  }
+
+  .managerStep h4 {
+    @apply text-sm font-black uppercase tracking-[0.14em];
+  }
+
+  .managerStep p {
+    @apply mt-1 text-sm leading-6 text-zinc-600;
   }
 
   .categoryPicker {
