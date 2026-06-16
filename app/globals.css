@@ -130,6 +130,239 @@
     --button-hover-fg: #fff;
   }
 
+  .portfolioGalleryShell {
+    @apply border-b border-zinc-200 bg-[#f7f7f7] px-5 pb-12 pt-10 md:px-10 md:pb-16 md:pt-12 lg:px-16;
+  }
+
+  .portfolioGalleryHeader {
+    @apply mx-auto grid max-w-[1500px] gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end;
+  }
+
+  .portfolioGalleryKicker {
+    font-family: var(--font-sohne);
+    @apply mb-4 text-[10px] font-black uppercase tracking-[0.28em] text-[#d8ad21];
+  }
+
+  .portfolioGalleryHeader h1 {
+    font-family: var(--font-canela);
+    font-size: clamp(3.25rem, 10vw, 10.5rem);
+    @apply font-black uppercase leading-[0.82];
+  }
+
+  .portfolioGalleryHeader h1 span {
+    @apply block;
+  }
+
+  .portfolioGalleryMeta {
+    font-family: var(--font-sohne);
+    @apply flex flex-col gap-4 border-t border-zinc-300 pt-5 text-xs uppercase leading-5 tracking-[0.16em] text-zinc-500 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0;
+  }
+
+  .portfolioGalleryMeta > span {
+    @apply text-[10px] font-black tracking-[0.24em] text-[#d8ad21];
+  }
+
+  .portfolioFilterBar {
+    @apply mx-auto mt-10 flex max-w-[1500px] gap-2 overflow-x-auto border-y border-zinc-200 py-3 md:flex-wrap md:overflow-visible;
+  }
+
+  .portfolioFilterBar button {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    font-family: var(--font-sohne);
+    @apply shrink-0 border border-zinc-300 bg-transparent px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-zinc-600 transition-colors duration-700;
+  }
+
+  .portfolioFilterBar button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: #030303;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 760ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .portfolioFilterBar button:hover,
+  .portfolioFilterBar button.isActive {
+    @apply border-black text-white;
+    font-family: var(--font-canela);
+  }
+
+  .portfolioFilterBar button:hover::before,
+  .portfolioFilterBar button.isActive::before {
+    transform: scaleX(1);
+  }
+
+  .portfolioGalleryStatus {
+    font-family: var(--font-sohne);
+    @apply mx-auto mt-7 flex max-w-[1500px] flex-wrap items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.22em] text-[#d8ad21];
+  }
+
+  .portfolioGalleryStatus a {
+    @apply inline-flex items-center gap-3 text-zinc-600 transition hover:text-black;
+  }
+
+  .portfolioGalleryTrack {
+    animation: portfolioGalleryIn 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    @apply mx-auto mt-7 grid max-w-[1500px] gap-5 md:grid-cols-2;
+  }
+
+  .portfolioGalleryCard {
+    @apply min-w-0;
+  }
+
+  .portfolioGalleryCard a {
+    @apply block h-full outline-none;
+  }
+
+  .portfolioMediaFrame {
+    @apply relative h-[420px] overflow-hidden bg-zinc-200 md:h-[520px];
+  }
+
+  .portfolioMediaFrame img,
+  .portfolioMediaFrame video {
+    @apply absolute inset-0 h-full w-full object-cover grayscale;
+  }
+
+  .portfolioMediaFrame img {
+    transform: scale(1.04);
+    transition:
+      opacity 720ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 1400ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .portfolioMediaFrame video {
+    opacity: 0;
+    transform: scale(1.08);
+    transition:
+      opacity 720ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 1400ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .portfolioCardShade {
+    @apply absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-75 transition duration-700;
+  }
+
+  .portfolioCardIndex {
+    font-family: var(--font-sohne);
+    @apply absolute left-4 top-4 z-10 text-[10px] font-black uppercase tracking-[0.24em] text-[#edc544];
+  }
+
+  .portfolioCardButton {
+    font-family: var(--font-sohne);
+    @apply absolute left-1/2 top-1/2 z-10 inline-flex h-12 min-w-[180px] -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-4 bg-black px-5 text-[10px] font-black uppercase tracking-[0.16em] text-white opacity-0 transition duration-700;
+  }
+
+  .portfolioCardText {
+    font-family: var(--font-sohne);
+    @apply mt-4 flex items-start justify-between gap-5;
+  }
+
+  .portfolioCardText h2 {
+    font-family: var(--font-canela);
+    @apply text-sm font-black uppercase tracking-[0.22em] text-[#d8ad21];
+  }
+
+  .portfolioCardText p {
+    @apply mt-3 text-xs uppercase tracking-[0.22em] text-zinc-500;
+  }
+
+  .portfolioCardText > span {
+    font-family: var(--font-canela);
+    @apply text-[10px] font-black uppercase tracking-[0.22em] text-[#d8ad21];
+  }
+
+  .portfolioGalleryCard:hover .portfolioMediaFrame img,
+  .portfolioGalleryCard:focus-within .portfolioMediaFrame img {
+    opacity: 0;
+    transform: scale(1);
+  }
+
+  .portfolioGalleryCard:hover .portfolioMediaFrame video,
+  .portfolioGalleryCard:focus-within .portfolioMediaFrame video {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .portfolioGalleryCard:hover .portfolioCardButton,
+  .portfolioGalleryCard:focus-within .portfolioCardButton {
+    opacity: 1;
+  }
+
+  .portfolioEmptyState {
+    font-family: var(--font-sohne);
+    @apply mx-auto mt-7 max-w-[1500px] border border-zinc-300 bg-white p-8 text-sm uppercase tracking-[0.12em] text-zinc-500;
+  }
+
+  @media (min-width: 1024px) {
+    .portfolioGalleryTrack {
+      display: flex;
+      align-items: stretch;
+      min-height: min(68vh, 680px);
+    }
+
+    .portfolioGalleryCard {
+      flex: 1 1 0;
+      min-width: 86px;
+      transition:
+        flex-grow 900ms cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+        filter 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .portfolioGalleryTrack:hover .portfolioGalleryCard {
+      flex-grow: 0.72;
+      opacity: 0.58;
+      filter: saturate(0.65);
+    }
+
+    .portfolioGalleryTrack .portfolioGalleryCard:hover,
+    .portfolioGalleryTrack .portfolioGalleryCard:focus-within {
+      flex-grow: 3.25;
+      opacity: 1;
+      filter: saturate(1);
+    }
+
+    .portfolioMediaFrame {
+      height: 100%;
+      min-height: min(68vh, 680px);
+    }
+
+    .portfolioCardText {
+      min-height: 84px;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .portfolioCardButton {
+      left: 1rem;
+      top: auto;
+      bottom: 1rem;
+      min-width: 156px;
+      transform: none;
+      opacity: 1;
+    }
+
+    .portfolioMediaFrame video {
+      display: none;
+    }
+  }
+
+  @keyframes portfolioGalleryIn {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .hero-scroll-section {
     --hero-bg-scale: 1;
     --hero-bg-y: 0px;
