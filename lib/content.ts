@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { list, put } from '@vercel/blob';
+import { get, put } from '@vercel/blob';
 
 export type LinkItem = { label: string; href: string };
 export type NavItem = LinkItem & { sectionId?: string };
@@ -91,25 +91,15 @@ async function getBlobContent(): Promise<SiteContent | null> {
   }
 
   try {
-    const { blobs } = await list({
-      prefix: blobContentPath,
-      limit: 1
+    const result = await get(blobContentPath, {
+      access: 'public'
     });
-    const blob = blobs.find((item) => item.pathname === blobContentPath) || blobs[0];
 
-    if (!blob?.url) {
+    if (!result?.stream) {
       return null;
     }
 
-    const response = await fetch(`${blob.url}?ts=${Date.now()}`, {
-      cache: 'no-store'
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    return response.json();
+    return new Response(result.stream).json();
   } catch {
     return null;
   }
@@ -125,6 +115,7 @@ export async function saveContent(content: SiteContent) {
   if (hasBlobStorage()) {
     await put(blobContentPath, JSON.stringify(content, null, 2), {
       access: 'public',
+      addRandomSuffix: false,
       allowOverwrite: true,
       cacheControlMaxAge: 0,
       contentType: 'application/json'
