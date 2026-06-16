@@ -7,6 +7,9 @@ import type { CategoryItem, LinkItem, PortfolioProject, SiteContent, WorkItem } 
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
+const saveTimeoutMs = 30000;
+const uploadTimeoutMs = 20 * 60 * 1000;
+
 const blankLink: LinkItem = { label: '', href: '' };
 const blankCategory: CategoryItem = { name: '', slug: '', description: '' };
 const blankWork: WorkItem = { title: '', year: '', slug: '', thumbnailUrl: '', videoUrl: '', description: '', categorySlugs: [], socialLinks: [] };
@@ -125,37 +128,57 @@ export default function AdminPage() {
     setStatus('saving');
     setMessage('Saving all changes...');
 
-    const res = await fetch('/api/content', {
-      method: 'PUT',
-      headers: { 'content-type': 'application/json', 'x-admin-password': password },
-      body: JSON.stringify(content)
-    });
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), saveTimeoutMs);
 
-    if (!res.ok) {
+    try {
+      const res = await fetch('/api/content', {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json', 'x-admin-password': password },
+        body: JSON.stringify(content),
+        signal: controller.signal
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setStatus('error');
+        setMessage(data.error || 'Could not save these changes.');
+        return;
+      }
+
       const data = await res.json().catch(() => ({}));
+      if (data.content) {
+        setContent(data.content);
+      }
+      setChanges([]);
+      setShowChanges(false);
+      setStatus('saved');
+      setMessage('All changes saved. Refresh the public site to see the update.');
+    } catch (error) {
       setStatus('error');
-      setMessage(data.error || 'Could not save these changes.');
-      return;
+      const message = error instanceof DOMException && error.name === 'AbortError'
+        ? 'Saving took too long. Please try again; nothing was published.'
+        : error instanceof Error
+          ? error.message
+          : 'Could not save these changes.';
+      setMessage(message);
+    } finally {
+      window.clearTimeout(timeout);
     }
-
-    const data = await res.json().catch(() => ({}));
-    if (data.content) {
-      setContent(data.content);
-    }
-    setChanges([]);
-    setShowChanges(false);
-    setStatus('saved');
-    setMessage('All changes saved. Refresh the public site to see the update.');
   };
 
   const upload = async (file: File, path: string, label: string) => {
     setStatus('saving');
-    setMessage(`Preparing ${label.toLowerCase()} upload...`);
+    setMessage(`Preparing ${label.toLowerCase()} replacement...`);
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), uploadTimeoutMs);
 
     try {
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'upload';
       const blob = await uploadBlob(`media/${Date.now()}-${safeName}`, file, {
         access: 'public',
+        abortSignal: controller.signal,
         contentType: file.type || undefined,
         handleUploadUrl: '/api/upload',
         headers: { 'x-admin-password': password },
@@ -166,11 +189,18 @@ export default function AdminPage() {
       });
 
       update(path, blob.url, `${label} uploaded`);
-      setMessage(`${label} uploaded. Use the floating Save button to publish it.`);
+      setStatus('idle');
+      setMessage(`${label} uploaded and placed in the field. Click the floating Save button to publish it.`);
     } catch (error) {
       setStatus('error');
-      const message = error instanceof Error ? error.message : 'Upload failed.';
+      const message = error instanceof DOMException && error.name === 'AbortError'
+        ? 'Upload took too long and was stopped. Try again with a smaller/compressed file or a stronger connection.'
+        : error instanceof Error
+          ? error.message
+          : 'Upload failed.';
       setMessage(`${label} upload failed: ${message}`);
+    } finally {
+      window.clearTimeout(timeout);
     }
   };
 
@@ -623,8 +653,23 @@ function MediaField({
       <label>{label}</label>
       <div className="fieldControl mediaControl">
         <input value={value} onChange={(e) => onChange(e.target.value)} placeholder="Paste image or video URL" />
-        <input type="file" accept="image/*,video/*" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
+        <input
+          type="file"
+          accept="image/*,video/*"
+          onChange={(e) => {
+            const file = e.currentTarget.files?.[0];
+            if (file) {
+              onFile(file);
+            }
+            e.currentTarget.value = '';
+          }}
+        />
       </div>
+      {value ? (
+        <button className="removeButton removeButtonInline" type="button" onClick={() => onChange('')}>
+          Remove current media
+        </button>
+      ) : null}
     </div>
   );
 }

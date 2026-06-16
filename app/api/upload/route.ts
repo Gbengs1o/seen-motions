@@ -4,15 +4,18 @@ import { NextResponse } from 'next/server';
 const maxUploadSize = 1024 * 1024 * 1024 * 2;
 
 export async function POST(request: Request) {
-  const adminPassword = process.env.ADMIN_PASSWORD || 'seen-site';
-  const suppliedPassword = request.headers.get('x-admin-password');
-
-  if (suppliedPassword !== adminPassword) {
-    return NextResponse.json({ error: 'Invalid admin password.' }, { status: 401 });
-  }
-
   try {
     const body = await request.json();
+
+    if (body?.type === 'blob.generate-client-token') {
+      const adminPassword = process.env.ADMIN_PASSWORD || 'seen-site';
+      const suppliedPassword = request.headers.get('x-admin-password');
+
+      if (suppliedPassword !== adminPassword) {
+        return NextResponse.json({ error: 'Invalid admin password.' }, { status: 401 });
+      }
+    }
+
     const response = await handleUpload({
       body,
       request,
