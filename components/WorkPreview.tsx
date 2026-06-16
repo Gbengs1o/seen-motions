@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
 import type { WorkItem } from '@/lib/content';
@@ -46,13 +45,10 @@ export default function WorkPreview({ item, index, featured, buttonLabel, meta }
       >
         <div className={`relative w-full overflow-hidden bg-zinc-200 ${featured ? 'h-[430px] md:h-[590px]' : 'h-[280px] md:h-[360px]'}`}>
           {thumbnail ? (
-            <Image
+            <img
               src={thumbnail}
               alt={item.title}
-              fill
-              priority={index === 0}
-              sizes={featured ? '(max-width: 900px) 100vw, 65vw' : '(max-width: 900px) 100vw, 32vw'}
-              className="object-cover grayscale transition duration-700 group-hover:opacity-0"
+              className="absolute inset-0 h-full w-full object-cover grayscale transition duration-700 group-hover:opacity-0"
             />
           ) : null}
           <video

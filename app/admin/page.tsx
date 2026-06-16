@@ -592,7 +592,7 @@ function CategoryEditor({
 
       <div className="friendlyFields">
         <Field label="Category name" value={category.name} onChange={(v) => update(`${basePath}.name`, v)} onSave={save} />
-        <Field label="Share link ending" value={category.slug} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
+        <Field label="Share link ending" value={category.slug} onChange={(v) => update(`${basePath}.slug`, cleanSlugInput(v))} onSave={save} />
         <Field label="Short description" value={category.description || ''} textarea onChange={(v) => update(`${basePath}.description`, v)} onSave={save} />
       </div>
 
@@ -653,7 +653,7 @@ function WorkEditor({
       <h3>{title}</h3>
       <Field label="Title" value={item.title} onChange={(v) => update(`${basePath}.title`, v)} onSave={save} />
       <Field label="Year" value={item.year} onChange={(v) => update(`${basePath}.year`, v)} onSave={save} />
-      <Field label="Detail page slug" value={item.slug || ''} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
+      <Field label="Detail page slug" value={item.slug || ''} onChange={(v) => update(`${basePath}.slug`, cleanSlugInput(v))} onSave={save} />
       <CategoryPicker
         categories={categories}
         label="Assigned categories"
@@ -756,7 +756,7 @@ function ProjectEditor({
       <div className="friendlyFields twoColumns">
         <Field label="Video name" value={project.title} onChange={(v) => update(`${basePath}.title`, v)} onSave={save} />
         <Field label="Year" value={project.year} onChange={(v) => update(`${basePath}.year`, v)} onSave={save} />
-        <Field label="Share link ending" value={project.slug || ''} onChange={(v) => update(`${basePath}.slug`, v)} onSave={save} />
+        <Field label="Share link ending" value={project.slug || ''} onChange={(v) => update(`${basePath}.slug`, cleanSlugInput(v))} onSave={save} />
         <Field label="Small label under video" value={project.discipline} onChange={(v) => update(`${basePath}.discipline`, v)} onSave={save} />
       </div>
 
@@ -791,7 +791,7 @@ function ProjectEditor({
           onSave={save}
         />
         <MediaField
-          label="Video file or video URL"
+          label="Video file or direct MP4 URL"
           value={project.videoUrl}
           onChange={(v) => update(`${basePath}.videoUrl`, v)}
           onFile={(f) => upload(f, `${basePath}.videoUrl`, `${title} video`)}
@@ -874,6 +874,27 @@ function CategoryPicker({
 
 function adminCategorySlug(category: CategoryItem) {
   return (category.slug || category.name)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+function cleanSlugInput(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+
+  try {
+    const url = new URL(trimmed);
+    const lastPathPart = url.pathname.split('/').filter(Boolean).at(-1);
+    return adminSlugify(lastPathPart || url.hostname);
+  } catch {
+    return adminSlugify(trimmed);
+  }
+}
+
+function adminSlugify(value: string) {
+  return value
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, '-')

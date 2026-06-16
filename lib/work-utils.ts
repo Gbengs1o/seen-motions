@@ -9,7 +9,7 @@ export function slugify(value: string) {
 }
 
 export function workSlug(work: Pick<WorkItem, 'slug' | 'title'>) {
-  return work.slug?.trim() || slugify(work.title);
+  return slugify(work.slug || work.title);
 }
 
 export function hasWorkMedia(work: WorkItem) {
@@ -21,7 +21,7 @@ export function workThumbnail(work: WorkItem) {
 }
 
 export function categorySlug(category: Pick<CategoryItem, 'slug' | 'name'>) {
-  return category.slug?.trim() || slugify(category.name);
+  return slugify(category.slug || category.name);
 }
 
 export function categoryHref(category: Pick<CategoryItem, 'slug' | 'name'>) {

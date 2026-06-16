@@ -5,7 +5,7 @@ export type DisplayWork = WorkItem | PortfolioProject;
 
 export function portfolioWorks(content: SiteContent): DisplayWork[] {
   const seen = new Set<string>();
-  const works = [...content.portfolio.projects, ...content.works.items].filter(hasWorkMedia);
+  const works = content.portfolio.projects.filter(hasWorkMedia);
 
   return works.filter((work) => {
     const slug = workSlug(work);
