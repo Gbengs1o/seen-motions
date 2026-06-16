@@ -55,6 +55,8 @@ export type SiteContent = {
     email: string;
     phone: string;
     phoneHref: string;
+    backupPhone: string;
+    backupPhoneHref: string;
     whatsappLabel: string;
     whatsappHref: string;
     connectTitle: string;
@@ -143,6 +145,21 @@ export async function saveContent(content: SiteContent) {
 function normalizeContent(content: SiteContent, defaults: SiteContent): SiteContent {
   return {
     ...content,
+    contact: {
+      ...defaults.contact,
+      ...content.contact,
+      labels: {
+        ...defaults.contact.labels,
+        ...content.contact.labels
+      },
+      placeholders: {
+        ...defaults.contact.placeholders,
+        ...content.contact.placeholders
+      },
+      quickLinks: Array.isArray(content.contact.quickLinks)
+        ? content.contact.quickLinks
+        : defaults.contact.quickLinks || []
+    },
     works: {
       ...content.works,
       items: normalizeWorks(content.works.items || [], defaults.works.items || [])

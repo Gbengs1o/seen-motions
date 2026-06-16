@@ -392,6 +392,8 @@ export default function AdminPage() {
             <Field label="Email" value={content.contact.email} onChange={(v) => update('contact.email', v)} onSave={save} />
             <Field label="Phone display" value={content.contact.phone} onChange={(v) => update('contact.phone', v)} onSave={save} />
             <Field label="Phone link" value={content.contact.phoneHref} onChange={(v) => update('contact.phoneHref', v)} onSave={save} />
+            <Field label="Backup phone display" value={content.contact.backupPhone || ''} onChange={(v) => update('contact.backupPhone', v)} onSave={save} />
+            <Field label="Backup phone link" value={content.contact.backupPhoneHref || ''} onChange={(v) => update('contact.backupPhoneHref', v)} onSave={save} />
             <Field label="WhatsApp display" value={content.contact.whatsappLabel} onChange={(v) => update('contact.whatsappLabel', v)} onSave={save} />
             <Field label="WhatsApp link" value={content.contact.whatsappHref} onChange={(v) => update('contact.whatsappHref', v)} onSave={save} />
           </div>

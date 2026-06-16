@@ -78,6 +78,12 @@ export default async function ContactPage() {
                   <Phone className="h-5 w-5 shrink-0" />
                   <span>{contact.phone}</span>
                 </a>
+                {contact.backupPhone ? (
+                  <a className="contactDirectLink text-base text-zinc-300" href={contact.backupPhoneHref}>
+                    <Phone className="h-5 w-5 shrink-0" />
+                    <span>Backup {contact.backupPhone}</span>
+                  </a>
+                ) : null}
                 <a
                   className="contactDirectLink text-base text-zinc-300"
                   href={contact.whatsappHref}
