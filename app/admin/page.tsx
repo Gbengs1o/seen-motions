@@ -41,6 +41,16 @@ export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [status, setStatus] = useState<SaveState>('idle');
   const [message, setMessage] = useState('');
+  const [changes, setChanges] = useState<string[]>([]);
+  const [showChanges, setShowChanges] = useState(false);
+
+  const hasChanges = changes.length > 0;
+
+  const trackChange = (label: string) => {
+    setChanges((current) => current.includes(label) ? current : [...current, label]);
+    setStatus('idle');
+    setMessage('You have unsaved changes. Use the floating Save button to publish them.');
+  };
 
   const unlock = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -64,10 +74,12 @@ export default function AdminPage() {
     setContent(data);
     setIsAuthenticated(true);
     setStatus('saved');
+    setChanges([]);
+    setShowChanges(false);
     setMessage('Dashboard unlocked.');
   };
 
-  const update = (path: string, value: any) => {
+  const update = (path: string, value: any, label?: string) => {
     if (!content) return;
     const copy: any = structuredClone(content);
     const keys = path.split('.');
@@ -79,6 +91,7 @@ export default function AdminPage() {
 
     pointer[keys.at(-1)!] = value;
     setContent(copy);
+    trackChange(label || readablePath(path));
   };
 
   const addToArray = (path: string, value: any, label: string) => {
@@ -93,8 +106,7 @@ export default function AdminPage() {
     const target = parent[last];
     target.push(value);
     setContent(copy);
-    setStatus('idle');
-    setMessage(`${label} added. Fill it in, then save the fields you changed.`);
+    trackChange(`Added ${label}`);
   };
 
   const removeFromArray = (path: string, index: number, label: string) => {
@@ -104,14 +116,13 @@ export default function AdminPage() {
     if (!Array.isArray(target)) return;
     target.splice(index, 1);
     setContent(copy);
-    setStatus('idle');
-    setMessage(`${label} removed. Save any field in this panel to publish the removal.`);
+    trackChange(`Deleted ${label}`);
   };
 
-  const save = async (label = 'Field') => {
+  const save = async () => {
     if (!content) return;
     setStatus('saving');
-    setMessage(`Saving ${label.toLowerCase()}...`);
+    setMessage('Saving all changes...');
 
     const res = await fetch('/api/content', {
       method: 'PUT',
@@ -122,12 +133,18 @@ export default function AdminPage() {
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       setStatus('error');
-      setMessage(data.error || 'Could not save this field.');
+      setMessage(data.error || 'Could not save these changes.');
       return;
     }
 
+    const data = await res.json().catch(() => ({}));
+    if (data.content) {
+      setContent(data.content);
+    }
+    setChanges([]);
+    setShowChanges(false);
     setStatus('saved');
-    setMessage(`${label} saved. Refresh the public site to see the update.`);
+    setMessage('All changes saved. Refresh the public site to see the update.');
   };
 
   const upload = async (file: File, path: string, label: string) => {
@@ -149,9 +166,8 @@ export default function AdminPage() {
       return;
     }
 
-    update(path, data.url);
-    setStatus('saved');
-    setMessage(`${label} uploaded. Save the media URL field to publish it.`);
+    update(path, data.url, `${label} uploaded`);
+    setMessage(`${label} uploaded. Use the floating Save button to publish it.`);
   };
 
   if (!isAuthenticated || !content) {
@@ -197,7 +213,7 @@ export default function AdminPage() {
           <div>
             <p className="kicker">/dashboard</p>
             <h1>Content Dashboard</h1>
-            <p>Each page and section has its own panel. Save only the field you changed.</p>
+            <p>Edit anything you need, then use the floating Save button to publish all changes at once.</p>
           </div>
           <div className="adminActions">
             <a href="/" target="_blank">Open site</a>
@@ -209,12 +225,23 @@ export default function AdminPage() {
                 setPassword('');
                 setMessage('');
                 setStatus('idle');
+                setChanges([]);
+                setShowChanges(false);
               }}
             >
               Lock
             </button>
           </div>
         </div>
+
+        <FloatingSaveBar
+          changes={changes}
+          hasChanges={hasChanges}
+          isOpen={showChanges}
+          onSave={save}
+          onToggle={() => setShowChanges((value) => !value)}
+          status={status}
+        />
 
         <div className="statusBar">
           <div>
@@ -435,18 +462,70 @@ function Panel({ id, eyebrow, title, children }: { id: string; eyebrow: string; 
   );
 }
 
+function FloatingSaveBar({
+  changes,
+  hasChanges,
+  isOpen,
+  onSave,
+  onToggle,
+  status
+}: {
+  changes: string[];
+  hasChanges: boolean;
+  isOpen: boolean;
+  onSave: () => void;
+  onToggle: () => void;
+  status: SaveState;
+}) {
+  return (
+    <div className={hasChanges ? 'floatingSaveBar isDirty' : 'floatingSaveBar'}>
+      <div>
+        <span>{hasChanges ? `${changes.length} unsaved change${changes.length === 1 ? '' : 's'}` : 'All changes saved'}</span>
+        <strong>{status === 'saving' ? 'Saving...' : hasChanges ? 'Ready to publish' : 'Dashboard is current'}</strong>
+      </div>
+      <div className="floatingSaveActions">
+        <button
+          className="floatingSaveButton"
+          disabled={!hasChanges || status === 'saving'}
+          onClick={onSave}
+          type="button"
+        >
+          {status === 'saving' ? 'Saving' : 'Save changes'}
+        </button>
+        <button
+          className="floatingChangesButton"
+          disabled={!hasChanges}
+          onClick={onToggle}
+          type="button"
+        >
+          {isOpen ? 'Hide' : 'Changes'}
+        </button>
+      </div>
+      {isOpen && hasChanges ? (
+        <div className="floatingChangesPanel">
+          <p>Pending changes</p>
+          <ul>
+            {changes.map((change) => (
+              <li key={change}>{change}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function Field({
   label,
   value,
   textarea,
-  onChange,
-  onSave
+  onChange
 }: {
   label: string;
   value: string;
   textarea?: boolean;
   onChange: (value: string) => void;
-  onSave: (label?: string) => void;
+  onSave?: (label?: string) => void;
 }) {
   return (
     <div className="field">
@@ -457,7 +536,6 @@ function Field({
         ) : (
           <input value={value} onChange={(e) => onChange(e.target.value)} />
         )}
-        <button className="fieldSave" type="button" onClick={() => onSave(label)}>Save</button>
       </div>
     </div>
   );
@@ -528,14 +606,13 @@ function MediaField({
   label,
   value,
   onChange,
-  onFile,
-  onSave
+  onFile
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   onFile: (file: File) => void;
-  onSave: (label?: string) => void;
+  onSave?: (label?: string) => void;
 }) {
   return (
     <div className="field">
@@ -543,7 +620,6 @@ function MediaField({
       <div className="fieldControl mediaControl">
         <input value={value} onChange={(e) => onChange(e.target.value)} placeholder="Paste image or video URL" />
         <input type="file" accept="image/*,video/*" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
-        <button className="fieldSave" type="button" onClick={() => onSave(label)}>Save</button>
       </div>
     </div>
   );
@@ -753,14 +829,13 @@ function CategoryPicker({
   label,
   value,
   categories,
-  onChange,
-  onSave
+  onChange
 }: {
   label: string;
   value: string[];
   categories: CategoryItem[];
   onChange: (value: string[]) => void;
-  onSave: (label?: string) => void;
+  onSave?: (label?: string) => void;
 }) {
   const selected = new Set(value);
   const toggle = (slug: string) => {
@@ -789,7 +864,6 @@ function CategoryPicker({
               </label>
             );
           })}
-          <button className="fieldSave" type="button" onClick={() => onSave(label)}>Save</button>
         </div>
       ) : (
         <p className="notice">Create a category first, then assign this video to it.</p>
@@ -804,4 +878,39 @@ function adminCategorySlug(category: CategoryItem) {
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+}
+
+function readablePath(path: string) {
+  const labels: Record<string, string> = {
+    brand: 'Brand text',
+    header: 'Navigation',
+    hero: 'Homepage hero',
+    works: 'Homepage featured videos',
+    services: 'Services',
+    vision: 'Vision section',
+    contact: 'Contact page',
+    portfolio: 'Portfolio',
+    footer: 'Footer',
+    categories: 'Video categories',
+    projects: 'Portfolio videos',
+    items: 'Homepage videos',
+    title: 'Title',
+    pageTitle: 'Page title',
+    pageDescription: 'Page description',
+    description: 'Description',
+    thumbnailUrl: 'Thumbnail',
+    videoUrl: 'Video file',
+    categorySlugs: 'Assigned categories',
+    socialLinks: 'Client/social links',
+    slug: 'Share link',
+    href: 'Link URL',
+    label: 'Link label'
+  };
+
+  const parts = path
+    .split('.')
+    .filter((part) => Number.isNaN(Number(part)))
+    .map((part) => labels[part] || part.replace(/([A-Z])/g, ' $1').trim());
+
+  return parts.join(' / ');
 }
