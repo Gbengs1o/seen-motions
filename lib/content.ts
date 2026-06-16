@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { get, put } from '@vercel/blob';
+import { list, put } from '@vercel/blob';
 
 export type LinkItem = { label: string; href: string };
 export type NavItem = LinkItem & { sectionId?: string };
@@ -75,6 +75,7 @@ export type SiteContent = {
 
 const contentPath = path.join(process.cwd(), 'data', 'content.json');
 const blobContentPath = 'cms/content.json';
+const blobContentPrefix = 'cms/content';
 
 function hasBlobStorage() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID || process.env.VERCEL);
@@ -91,15 +92,28 @@ async function getBlobContent(): Promise<SiteContent | null> {
   }
 
   try {
-    const result = await get(blobContentPath, {
-      access: 'public'
+    const { blobs } = await list({
+      prefix: blobContentPrefix,
+      limit: 100
     });
 
-    if (!result?.stream) {
+    const blob = blobs
+      .filter((item) => item.pathname === blobContentPath || /^cms\/content-\d+\.json$/.test(item.pathname))
+      .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())[0];
+
+    if (!blob?.url) {
       return null;
     }
 
-    return new Response(result.stream).json();
+    const response = await fetch(`${blob.url}?ts=${Date.now()}`, {
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return response.json();
   } catch {
     return null;
   }
@@ -113,10 +127,9 @@ export async function getContent(): Promise<SiteContent> {
 
 export async function saveContent(content: SiteContent) {
   if (hasBlobStorage()) {
-    await put(blobContentPath, JSON.stringify(content, null, 2), {
+    await put(`cms/content-${Date.now()}.json`, JSON.stringify(content, null, 2), {
       access: 'public',
       addRandomSuffix: false,
-      allowOverwrite: true,
       cacheControlMaxAge: 0,
       contentType: 'application/json'
     });

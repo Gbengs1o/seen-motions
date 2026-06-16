@@ -134,11 +134,11 @@
     "helperText": "Opens an email draft with the name, email, call details, WhatsApp and message already filled in.",
     "emailSubject": "New project enquiry",
     "directTitle": "Direct Contact",
-    "email": "hello@seen.studio",
-    "phone": "+44 20 7123 4567",
-    "phoneHref": "tel:+442071234567",
-    "whatsappLabel": "WhatsApp 09034567789",
-    "whatsappHref": "https://wa.me/2349034567789",
+    "email": "seenvideoeditor@gmail.com",
+    "phone": "08050488519",
+    "phoneHref": "tel:+2348050488519",
+    "whatsappLabel": "WhatsApp 08050488519",
+    "whatsappHref": "https://wa.me/2348050488519",
     "connectTitle": "Connect",
     "quickLinks": [
       {
