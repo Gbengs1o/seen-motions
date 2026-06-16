@@ -130,6 +130,87 @@
     --button-hover-fg: #fff;
   }
 
+  .contactBackgroundMarquee {
+    pointer-events: none;
+    position: absolute;
+    top: 2.5rem;
+    right: -18rem;
+    left: 22%;
+    z-index: 0;
+    display: none;
+    overflow: hidden;
+    color: rgba(0, 0, 0, 0.035);
+    font-family: var(--font-canela);
+    font-size: clamp(12rem, 23vw, 24rem);
+    font-weight: 900;
+    line-height: 0.8;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .contactBackgroundMarquee::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #f7f7f7 0%, transparent 18%, transparent 76%, #f7f7f7 100%);
+  }
+
+  .contactBackgroundMarquee > div {
+    display: flex;
+    width: max-content;
+    gap: 0.26em;
+    animation: contactWordDrift 28s linear infinite;
+    will-change: transform;
+  }
+
+  .contactDirectLink {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .contactDirectLink span {
+    min-width: 0;
+  }
+
+  .contactDirectEmail {
+    align-items: flex-start;
+    color: #fff;
+    font-size: clamp(1rem, 1.45vw, 1.45rem);
+    font-weight: 800;
+    line-height: 1.18;
+  }
+
+  .contactDirectEmail span {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  @media (min-width: 768px) {
+    .contactBackgroundMarquee {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contactBackgroundMarquee > div {
+      animation: none;
+      transform: translateX(-12%);
+    }
+  }
+
+  @keyframes contactWordDrift {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform: translate3d(-52%, 0, 0);
+    }
+  }
+
   .portfolioGalleryShell {
     @apply border-b border-zinc-200 bg-[#f7f7f7] px-5 pb-12 pt-10 md:px-10 md:pb-16 md:pt-12 lg:px-16;
   }
