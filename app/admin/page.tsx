@@ -1,6 +1,7 @@
 'use client';
 
 import type { FormEvent, ReactNode } from 'react';
+import { upload as uploadBlob } from '@vercel/blob/client';
 import { useState } from 'react';
 import type { CategoryItem, LinkItem, PortfolioProject, SiteContent, WorkItem } from '@/lib/content';
 
@@ -148,26 +149,29 @@ export default function AdminPage() {
   };
 
   const upload = async (file: File, path: string, label: string) => {
-    const form = new FormData();
-    form.append('file', file);
     setStatus('saving');
-    setMessage(`Uploading ${label.toLowerCase()}...`);
+    setMessage(`Preparing ${label.toLowerCase()} upload...`);
 
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      headers: { 'x-admin-password': password },
-      body: form
-    });
-    const data = await res.json();
+    try {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'upload';
+      const blob = await uploadBlob(`media/${Date.now()}-${safeName}`, file, {
+        access: 'public',
+        contentType: file.type || undefined,
+        handleUploadUrl: '/api/upload',
+        headers: { 'x-admin-password': password },
+        multipart: file.size > 5 * 1024 * 1024,
+        onUploadProgress: ({ percentage }) => {
+          setMessage(`Uploading ${label.toLowerCase()}... ${Math.round(percentage)}%`);
+        }
+      });
 
-    if (!res.ok) {
+      update(path, blob.url, `${label} uploaded`);
+      setMessage(`${label} uploaded. Use the floating Save button to publish it.`);
+    } catch (error) {
       setStatus('error');
-      setMessage(data.error || 'Upload failed.');
-      return;
+      const message = error instanceof Error ? error.message : 'Upload failed.';
+      setMessage(`${label} upload failed: ${message}`);
     }
-
-    update(path, data.url, `${label} uploaded`);
-    setMessage(`${label} uploaded. Use the floating Save button to publish it.`);
   };
 
   if (!isAuthenticated || !content) {
@@ -480,7 +484,7 @@ function FloatingSaveBar({
   return (
     <div className={hasChanges ? 'floatingSaveBar isDirty' : 'floatingSaveBar'}>
       <div>
-        <span>{hasChanges ? `${changes.length} unsaved change${changes.length === 1 ? '' : 's'}` : 'All changes saved'}</span>
+        <span>{status === 'saving' && !hasChanges ? 'Upload in progress' : hasChanges ? `${changes.length} unsaved change${changes.length === 1 ? '' : 's'}` : 'All changes saved'}</span>
         <strong>{status === 'saving' ? 'Saving...' : hasChanges ? 'Ready to publish' : 'Dashboard is current'}</strong>
       </div>
       <div className="floatingSaveActions">
